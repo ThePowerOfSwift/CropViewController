@@ -13,6 +13,7 @@
 		56C980A91FA02D85007507AB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56C980A81FA02D85007507AB /* Assets.xcassets */; };
 		56C980AC1FA02D85007507AB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56C980AA1FA02D85007507AB /* LaunchScreen.storyboard */; };
 		56C980B71FA02D85007507AB /* RotatableImageViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980B61FA02D85007507AB /* RotatableImageViewTests.swift */; };
+		56C980C21FA02F1F007507AB /* sample.png in Resources */ = {isa = PBXBuildFile; fileRef = 56C980C11FA02F0C007507AB /* sample.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		56C980B21FA02D85007507AB /* RotatableImageViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RotatableImageViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		56C980B61FA02D85007507AB /* RotatableImageViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatableImageViewTests.swift; sourceTree = "<group>"; };
 		56C980B81FA02D85007507AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		56C980C11FA02F0C007507AB /* sample.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 			children = (
 				56C980A11FA02D85007507AB /* AppDelegate.swift */,
 				56C980A31FA02D85007507AB /* ViewController.swift */,
+				56C980C11FA02F0C007507AB /* sample.png */,
 				56C980A51FA02D85007507AB /* Main.storyboard */,
 				56C980A81FA02D85007507AB /* Assets.xcassets */,
 				56C980AA1FA02D85007507AB /* LaunchScreen.storyboard */,
@@ -179,6 +182,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56C980C21FA02F1F007507AB /* sample.png in Resources */,
 				56C980AC1FA02D85007507AB /* LaunchScreen.storyboard in Resources */,
 				56C980A91FA02D85007507AB /* Assets.xcassets in Resources */,
 				56C980A71FA02D85007507AB /* Main.storyboard in Resources */,
