@@ -8,42 +8,27 @@
 
 import UIKit
 
-extension CGRect {
-    func withCentering(in rect: CGRect) -> CGRect {
-        let center = CGPoint(x: (rect.width - width) / 2, y: (rect.height - height) / 2)
-        return CGRect(origin: center, size: size)
-    }
-}
-
-extension UIImage {
-    var safeCiImage: CIImage? {
-        return self.ciImage ?? CIImage(image: self)
-    }
-    
-    var safeCgImage: CGImage? {
-        if let cgImge = self.cgImage {
-            return cgImge
-        }
-        if let ciImage = safeCiImage {
-            let context = CIContext(options: nil)
-            return context.createCGImage(ciImage, from: ciImage.extent)
-        }
-        return nil
-    }
-}
-
 /// 中心に画像を描画する
 /// TODO: automatic scale on setting image
 class RotatableImageView: UIView {
+    
+    struct RotatableImageViewState {
+        var rotation: CGFloat = 0.0
+        var scale: CGFloat = 1.0
+        var translation: CGPoint = CGPoint.zero
+    }
+    
     var image: UIImage? {
         didSet {
             setNeedsDisplay()
         }
     }
-    var angle: CGFloat = 0.0
-    var scale: CGFloat = 1.0
-    var translateX: CGFloat = 0.0
-    var translateY: CGFloat = 0.0
+    
+    var state = RotatableImageViewState() {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
     
     var contentSize: CGSize {
         return image?.size ?? .zero
@@ -61,6 +46,8 @@ class RotatableImageView: UIView {
     
     private func _commonInit() {
         self.backgroundColor = .clear
+        self.isUserInteractionEnabled = true
+        _setupGestureRecognizers()
     }
     
     override func sizeToFit() {
@@ -69,8 +56,7 @@ class RotatableImageView: UIView {
     
     /// draw scale = 1.0 image and crop with converted rect.
     func getImage(of frame: CGRect) -> UIImage? {
-        let drawScale = 1 / scale
-        
+        let drawScale = 1 / state.scale
         let drawRect = CGRect(x: 0, y: 0, width: bounds.size.width * drawScale, height: bounds.size.height * drawScale)
         
         UIGraphicsBeginImageContext(drawRect.size)
@@ -80,7 +66,7 @@ class RotatableImageView: UIView {
         guard let context = _draw(drawRect, drawScale: drawScale) else {
             return nil
         }
-        let convertedFrame = CGRect(x: frame.minX * drawScale, y: frame.minY * drawScale, width: frame.width * drawScale, height: frame.width * drawScale)
+        let convertedFrame = CGRect(x: frame.origin.x * drawScale, y: frame.origin.y * drawScale, width: frame.width * drawScale, height: frame.width * drawScale)
         return context.makeImage()?.cropping(to: convertedFrame).map { UIImage(cgImage: $0) }
     }
     
@@ -108,15 +94,15 @@ class RotatableImageView: UIView {
         context.translateBy(x: rect.midX, y: rect.midY)
         
         // translate
-        context.translateBy(x: translateX * drawScale, y: translateY * drawScale)
+        context.translateBy(x: state.translation.x * drawScale, y: state.translation.y * drawScale)
         
         let imageFrame = CGRect(origin: .zero, size: image.size)
         
         // rotate
-        context.rotate(by: angle)
+        context.rotate(by: state.rotation)
         
         // scale
-        context.scaleBy(x: scale * drawScale, y: scale * drawScale)
+        context.scaleBy(x: state.scale * drawScale, y: state.scale * drawScale)
         
         // draw
         image.draw(in: imageFrame.offsetBy(dx: -imageFrame.width / 2, dy: -imageFrame.width / 2))
@@ -130,32 +116,126 @@ class RotatableImageView: UIView {
     override func draw(_ rect: CGRect) {
         _draw(rect)
     }
+    
+    // gesture
+    private lazy var pinchGestureRecognizer: UIPinchGestureRecognizer = {
+        let gestureRecognizer = UIPinchGestureRecognizer()
+        gestureRecognizer.delegate = self
+        gestureRecognizer.addTarget(self, action: #selector(self.onPinched(gestureRecognizer:)))
+        return gestureRecognizer
+    }()
+    
+    private lazy var rotationGestureRecognizer: UIRotationGestureRecognizer = {
+        let gestureRecognizer = UIRotationGestureRecognizer()
+        gestureRecognizer.addTarget(self, action: #selector(self.onRotated(gestureRecognizer:)))
+        return gestureRecognizer
+    }()
+    
+    private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
+        let gestureRecognizer = UIPanGestureRecognizer()
+        gestureRecognizer.addTarget(self, action: #selector(self.onPanned(gestureRecognizer:)))
+        return gestureRecognizer
+    }()
+    
+    private var initialRotation: CGFloat = 0.0
+    private var initialScale: CGFloat = 1.0
+    private var initialTranslation: CGPoint = CGPoint.zero
+    
+    let minimumScale: CGFloat = 0.5
+    let maximumScale: CGFloat = 8.0
+    private func _normalizedScale(for scale: CGFloat) -> CGFloat {
+        return max(min(scale, maximumScale), minimumScale)
+    }
+    
+    private func _setupGestureRecognizers() {
+        addGestureRecognizer(pinchGestureRecognizer)
+        addGestureRecognizer(rotationGestureRecognizer)
+        addGestureRecognizer(panGestureRecognizer)
+    }
+    
+    @objc func onRotated(gestureRecognizer: UIRotationGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .began:
+            initialRotation = state.rotation
+        case .changed:
+            state.rotation = initialRotation + gestureRecognizer.rotation
+        case .ended:
+            state.rotation = initialRotation + gestureRecognizer.rotation
+        case .failed, .cancelled, .possible:
+            break
+        }
+    }
+    
+    @objc func onPinched(gestureRecognizer: UIPinchGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .began:
+            initialScale = state.scale
+        case .changed:
+            state.scale = _normalizedScale(for: initialScale * gestureRecognizer.scale)
+        case .ended:
+            state.scale = _normalizedScale(for: initialScale * gestureRecognizer.scale)
+        case .failed, .cancelled, .possible:
+            break
+        }
+    }
+    
+    @objc func onPanned(gestureRecognizer: UIPanGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .began:
+            initialTranslation = state.translation
+        case .changed:
+            let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
+            state.translation = CGPoint(x: initialTranslation.x + translation.x, y: initialTranslation.y + translation.y)
+        case .ended:
+            let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
+            state.translation = CGPoint(x: initialTranslation.x + translation.x, y: initialTranslation.y + translation.y)
+        case .failed, .cancelled, .possible:
+            break
+        }
+    }
+}
+
+extension RotatableImageView: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }
 
 class ViewController: UIViewController {
+    
+    private lazy var imageView: RotatableImageView = {
+        let imageView = RotatableImageView(frame: view.bounds)
+        imageView.image = #imageLiteral(resourceName: "sample.png")
+        imageView.state.scale = 2 / 3
+        imageView.state.rotation = CGFloat.pi / 3 * 2
+        return imageView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         
-        let imageView = RotatableImageView(frame: view.bounds)
-        imageView.image = #imageLiteral(resourceName: "sample.png")
-        imageView.scale = 1.5
-        imageView.angle = CGFloat.pi / 3 * 2
+        view.backgroundColor = UIColor.black
+        
         view.addSubview(imageView)
         
-        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) {  _ in
-            imageView.image = imageView.getImage(of: CGRect(origin: .zero, size: CGSize(width: 100, height: 100)).withCentering(in: imageView.bounds))
-            imageView.scale = 1.5
-            imageView.angle = 0
+        let sampleCropRect = CGRect(origin: CGPoint(x: imageView.bounds.midX - 100, y: imageView.bounds.midY - 100), size: CGSize(width: 200, height: 200))
+        
+        let cropView = UIView(frame: sampleCropRect)
+        cropView.backgroundColor = .clear
+        cropView.layer.borderColor = UIColor.white.cgColor
+        cropView.layer.borderWidth = 2.0
+        cropView.isUserInteractionEnabled = false
+        view.addSubview(cropView)
+
+        Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { [weak self] _ in
+            self?.crop(sampleCropRect)
         }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    func crop(_ rect: CGRect) {
+        let image = imageView.getImage(of: rect)
+        imageView.image = image
+        imageView.state.translation = .zero
+        imageView.state.rotation = 0.0
     }
-
-
 }
-
