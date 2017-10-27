@@ -57,12 +57,18 @@ class RotatableImageView: UIView {
     }
     
     // いい感じのscaleに自動調整する
-    func fitScale() {
+    func adjustScaleToFit(_ rect: CGRect) {
         let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
-        let boundingSize = bounds.insetBy(dx: 50, dy: 50)
-        let wScale = boundingSize.width / defaultSize.width
-        let hScale = boundingSize.height / defaultSize.height
+        let wScale = rect.width / defaultSize.width
+        let hScale = rect.height / defaultSize.height
         state.scale = min(wScale, hScale)
+    }
+    
+    func adjustScaleToFill(_ rect: CGRect) {
+        let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
+        let wScale = rect.width / defaultSize.width
+        let hScale = rect.height / defaultSize.height
+        state.scale = max(wScale, hScale)
     }
     
     override func sizeToFit() {
