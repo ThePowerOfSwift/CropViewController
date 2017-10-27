@@ -26,10 +26,17 @@ class CropViewController: UIViewController {
         return gridView
     }()
     
+    private lazy var holedDimView: UIView = {
+        let dimView = UIView()
+        dimView.isUserInteractionEnabled = false
+        dimView.backgroundColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.8)
+        return dimView
+    }()
+    
     var cropRect: CGRect = CGRect.zero {
         didSet {
-            imageView.adjustScaleToFit(cropRect)
             gridView.frame = cropRect
+            holedDimView.mask(rect: cropRect, inverse: true)
         }
     }
 
@@ -39,12 +46,17 @@ class CropViewController: UIViewController {
         view.backgroundColor = UIColor.black
         
         view.addSubview(imageView)
+        view.addSubview(holedDimView)
         view.addSubview(gridView)
         _setupButton()
         
         imageView.frame = view.bounds
+        holedDimView.frame = view.bounds
         
         cropRect = CGRect(origin: CGPoint(x: imageView.bounds.midX - 100, y: imageView.bounds.midY - 100), size: CGSize(width: 200, height: 200))
+        
+        // imageViewをはじめちょうどfitするように合わせる
+        imageView.adjustScaleToFit(cropRect)
     }
     
     private func _setupButton() {
