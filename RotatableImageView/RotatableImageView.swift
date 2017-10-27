@@ -72,24 +72,32 @@ final class RotatableImageView: UIView {
         _draw(rect)
     }
     
+    private func _scaleToFit(_ rect: CGRect) -> CGFloat {
+        let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
+        let wScale = rect.width / defaultSize.width
+        let hScale = rect.height / defaultSize.height
+        return min(wScale, hScale)
+    }
+    
+    private func _scaleToFill(_ rect: CGRect) -> CGFloat {
+        let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
+        let wScale = rect.width / defaultSize.width
+        let hScale = rect.height / defaultSize.height
+        return max(wScale, hScale)
+    }
+    
     /// Adjust iamge scale to fit rect.
     ///
     /// - parameter rect: The rectangle to fit.
     func adjustScaleToFit(_ rect: CGRect) {
-        let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
-        let wScale = rect.width / defaultSize.width
-        let hScale = rect.height / defaultSize.height
-        state.scale = min(wScale, hScale)
+        state.scale = _scaleToFit(rect)
     }
     
     /// Adjust iamge scale to fit rect.
     ///
     /// - parameter rect: The rectangle to fill.
     func adjustScaleToFill(_ rect: CGRect) {
-        let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
-        let wScale = rect.width / defaultSize.width
-        let hScale = rect.height / defaultSize.height
-        state.scale = max(wScale, hScale)
+        state.scale = _scaleToFill(rect)
     }
     
     /// draw scale = 1.0 image and crop with converted rect.
@@ -178,10 +186,24 @@ final class RotatableImageView: UIView {
     private var initialScale: CGFloat = 1.0
     private var initialTranslation: CGPoint = CGPoint.zero
     
-    let minimumScale: CGFloat = 0.5
-    let maximumScale: CGFloat = 8.0
+    private func restrictedValue<T: Comparable>(for value: T, min minValue: T, max maxValue: T) -> T {
+        return max(min(value, maxValue), minValue)
+    }
+    
+    /// Restrict translation not to go outside the screen
+    private func _normalizedTranslation(for translation: CGPoint) -> CGPoint {
+        let shortestEdge = min(contentSize.width, contentSize.height) * state.scale
+        let maxTranslateX = bounds.width / 2 + shortestEdge / 2 - 5
+        let maxTranslateY = bounds.height / 2 + shortestEdge / 2 - 5
+        return CGPoint(x: restrictedValue(for: translation.x, min: -maxTranslateX, max: maxTranslateX),
+                       y: restrictedValue(for: translation.y, min: -maxTranslateY, max: maxTranslateY))
+    }
+    
     private func _normalizedScale(for scale: CGFloat) -> CGFloat {
-        return max(min(scale, maximumScale), minimumScale)
+        let niceScale = _scaleToFit(bounds.insetBy(dx: 50, dy: 50))
+        let minimumScale: CGFloat = niceScale * 0.3
+        let maximumScale: CGFloat = niceScale * 8.0
+        return restrictedValue(for: scale, min: minimumScale, max: maximumScale)
     }
     
     private func _setupGestureRecognizers() {
@@ -221,11 +243,13 @@ final class RotatableImageView: UIView {
         case .began:
             initialTranslation = state.translation
         case .changed:
-            let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
-            state.translation = CGPoint(x: initialTranslation.x + translation.x, y: initialTranslation.y + translation.y)
+            let gestureTranslation = gestureRecognizer.translation(in: gestureRecognizer.view)
+            let translation = CGPoint(x: initialTranslation.x + gestureTranslation.x, y: initialTranslation.y + gestureTranslation.y)
+            state.translation = _normalizedTranslation(for: translation)
         case .ended:
-            let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
-            state.translation = CGPoint(x: initialTranslation.x + translation.x, y: initialTranslation.y + translation.y)
+            let gestureTranslation = gestureRecognizer.translation(in: gestureRecognizer.view)
+            let translation = CGPoint(x: initialTranslation.x + gestureTranslation.x, y: initialTranslation.y + gestureTranslation.y)
+            state.translation = _normalizedTranslation(for: translation)
         case .failed, .cancelled, .possible:
             break
         }
