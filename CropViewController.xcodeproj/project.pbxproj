@@ -35,14 +35,14 @@
 		562EC7BA1FA2B94800AF38DC /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		562EC7BC1FA2BD1C00AF38DC /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		562EC7C01FA2C20A00AF38DC /* UIImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
-		56C9809E1FA02D85007507AB /* RotatableImageView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RotatableImageView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		56C9809E1FA02D85007507AB /* CropViewController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CropViewController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56C980A11FA02D85007507AB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56C980A31FA02D85007507AB /* CropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
 		56C980A61FA02D85007507AB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		56C980A81FA02D85007507AB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56C980AB1FA02D85007507AB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		56C980AD1FA02D85007507AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		56C980B21FA02D85007507AB /* RotatableImageViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RotatableImageViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		56C980B21FA02D85007507AB /* CropViewControllerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CropViewControllerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		56C980B61FA02D85007507AB /* RotatableImageViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatableImageViewTests.swift; sourceTree = "<group>"; };
 		56C980B81FA02D85007507AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		56C980C11FA02F0C007507AB /* sample.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample.png; sourceTree = "<group>"; };
@@ -66,11 +66,49 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		562EC7CA1FA2F69000AF38DC /* View */ = {
+			isa = PBXGroup;
+			children = (
+				562EC7B81FA1DE6900AF38DC /* RotatableImageView.swift */,
+				562EC7BA1FA2B94800AF38DC /* GridView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		562EC7CB1FA2F6A100AF38DC /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				562EC7BC1FA2BD1C00AF38DC /* UIView+Extension.swift */,
+				562EC7C01FA2C20A00AF38DC /* UIImage+Extension.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		562EC7CC1FA2F70D00AF38DC /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				56C980A31FA02D85007507AB /* CropViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		562EC7CD1FA2F71D00AF38DC /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				56C980C11FA02F0C007507AB /* sample.png */,
+				56C980A51FA02D85007507AB /* Main.storyboard */,
+				56C980A81FA02D85007507AB /* Assets.xcassets */,
+				56C980AA1FA02D85007507AB /* LaunchScreen.storyboard */,
+				56C980AD1FA02D85007507AB /* Info.plist */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
 		56C980951FA02D85007507AB = {
 			isa = PBXGroup;
 			children = (
-				56C980A01FA02D85007507AB /* RotatableImageView */,
-				56C980B51FA02D85007507AB /* RotatableImageViewTests */,
+				56C980A01FA02D85007507AB /* CropViewController */,
+				56C980B51FA02D85007507AB /* CropViewControllerTests */,
 				56C9809F1FA02D85007507AB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,45 +116,39 @@
 		56C9809F1FA02D85007507AB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				56C9809E1FA02D85007507AB /* RotatableImageView.app */,
-				56C980B21FA02D85007507AB /* RotatableImageViewTests.xctest */,
+				56C9809E1FA02D85007507AB /* CropViewController.app */,
+				56C980B21FA02D85007507AB /* CropViewControllerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		56C980A01FA02D85007507AB /* RotatableImageView */ = {
+		56C980A01FA02D85007507AB /* CropViewController */ = {
 			isa = PBXGroup;
 			children = (
-				562EC7B81FA1DE6900AF38DC /* RotatableImageView.swift */,
 				56C980A11FA02D85007507AB /* AppDelegate.swift */,
-				56C980A31FA02D85007507AB /* CropViewController.swift */,
-				56C980C11FA02F0C007507AB /* sample.png */,
-				56C980A51FA02D85007507AB /* Main.storyboard */,
-				56C980A81FA02D85007507AB /* Assets.xcassets */,
-				56C980AA1FA02D85007507AB /* LaunchScreen.storyboard */,
-				56C980AD1FA02D85007507AB /* Info.plist */,
-				562EC7BA1FA2B94800AF38DC /* GridView.swift */,
-				562EC7BC1FA2BD1C00AF38DC /* UIView+Extension.swift */,
-				562EC7C01FA2C20A00AF38DC /* UIImage+Extension.swift */,
+				562EC7CB1FA2F6A100AF38DC /* Extension */,
+				562EC7CD1FA2F71D00AF38DC /* Resource */,
+				562EC7CA1FA2F69000AF38DC /* View */,
+				562EC7CC1FA2F70D00AF38DC /* ViewController */,
 			);
-			path = RotatableImageView;
+			path = CropViewController;
 			sourceTree = "<group>";
 		};
-		56C980B51FA02D85007507AB /* RotatableImageViewTests */ = {
+		56C980B51FA02D85007507AB /* CropViewControllerTests */ = {
 			isa = PBXGroup;
 			children = (
 				56C980B61FA02D85007507AB /* RotatableImageViewTests.swift */,
 				56C980B81FA02D85007507AB /* Info.plist */,
 			);
-			path = RotatableImageViewTests;
+			path = CropViewControllerTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		56C9809D1FA02D85007507AB /* RotatableImageView */ = {
+		56C9809D1FA02D85007507AB /* CropViewController */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 56C980BB1FA02D85007507AB /* Build configuration list for PBXNativeTarget "RotatableImageView" */;
+			buildConfigurationList = 56C980BB1FA02D85007507AB /* Build configuration list for PBXNativeTarget "CropViewController" */;
 			buildPhases = (
 				56C9809A1FA02D85007507AB /* Sources */,
 				56C9809B1FA02D85007507AB /* Frameworks */,
@@ -126,14 +158,14 @@
 			);
 			dependencies = (
 			);
-			name = RotatableImageView;
+			name = CropViewController;
 			productName = RotatableImageView;
-			productReference = 56C9809E1FA02D85007507AB /* RotatableImageView.app */;
+			productReference = 56C9809E1FA02D85007507AB /* CropViewController.app */;
 			productType = "com.apple.product-type.application";
 		};
-		56C980B11FA02D85007507AB /* RotatableImageViewTests */ = {
+		56C980B11FA02D85007507AB /* CropViewControllerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 56C980BE1FA02D85007507AB /* Build configuration list for PBXNativeTarget "RotatableImageViewTests" */;
+			buildConfigurationList = 56C980BE1FA02D85007507AB /* Build configuration list for PBXNativeTarget "CropViewControllerTests" */;
 			buildPhases = (
 				56C980AE1FA02D85007507AB /* Sources */,
 				56C980AF1FA02D85007507AB /* Frameworks */,
@@ -144,9 +176,9 @@
 			dependencies = (
 				56C980B41FA02D85007507AB /* PBXTargetDependency */,
 			);
-			name = RotatableImageViewTests;
+			name = CropViewControllerTests;
 			productName = RotatableImageViewTests;
-			productReference = 56C980B21FA02D85007507AB /* RotatableImageViewTests.xctest */;
+			productReference = 56C980B21FA02D85007507AB /* CropViewControllerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -170,7 +202,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 56C980991FA02D85007507AB /* Build configuration list for PBXProject "RotatableImageView" */;
+			buildConfigurationList = 56C980991FA02D85007507AB /* Build configuration list for PBXProject "CropViewController" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -183,8 +215,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				56C9809D1FA02D85007507AB /* RotatableImageView */,
-				56C980B11FA02D85007507AB /* RotatableImageViewTests */,
+				56C9809D1FA02D85007507AB /* CropViewController */,
+				56C980B11FA02D85007507AB /* CropViewControllerTests */,
 			);
 		};
 /* End PBXProject section */
@@ -237,7 +269,7 @@
 /* Begin PBXTargetDependency section */
 		56C980B41FA02D85007507AB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 56C9809D1FA02D85007507AB /* RotatableImageView */;
+			target = 56C9809D1FA02D85007507AB /* CropViewController */;
 			targetProxy = 56C980B31FA02D85007507AB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -375,9 +407,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = V723YSJ67H;
-				INFOPLIST_FILE = RotatableImageView/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/CropViewController/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.ha1f.RotatableImageView;
+				PRODUCT_BUNDLE_IDENTIFIER = net.ha1f.CropViewController;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -390,9 +422,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = V723YSJ67H;
-				INFOPLIST_FILE = RotatableImageView/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/CropViewController/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.ha1f.RotatableImageView;
+				PRODUCT_BUNDLE_IDENTIFIER = net.ha1f.CropViewController;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -412,7 +444,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RotatableImageView.app/RotatableImageView";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CropViewController.app/CropViewController";
 			};
 			name = Debug;
 		};
@@ -429,14 +461,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RotatableImageView.app/RotatableImageView";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CropViewController.app/CropViewController";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		56C980991FA02D85007507AB /* Build configuration list for PBXProject "RotatableImageView" */ = {
+		56C980991FA02D85007507AB /* Build configuration list for PBXProject "CropViewController" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56C980B91FA02D85007507AB /* Debug */,
@@ -445,7 +477,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		56C980BB1FA02D85007507AB /* Build configuration list for PBXNativeTarget "RotatableImageView" */ = {
+		56C980BB1FA02D85007507AB /* Build configuration list for PBXNativeTarget "CropViewController" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56C980BC1FA02D85007507AB /* Debug */,
@@ -454,7 +486,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		56C980BE1FA02D85007507AB /* Build configuration list for PBXNativeTarget "RotatableImageViewTests" */ = {
+		56C980BE1FA02D85007507AB /* Build configuration list for PBXNativeTarget "CropViewControllerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56C980BF1FA02D85007507AB /* Debug */,
