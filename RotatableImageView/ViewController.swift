@@ -10,6 +10,8 @@ import UIKit
 
 class CropViewController: UIViewController {
     
+    private static let dimViewColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.8)
+    
     private lazy var imageView: RotatableImageView = {
         let imageView = RotatableImageView()
         imageView.image = #imageLiteral(resourceName: "sample.png")
@@ -29,13 +31,33 @@ class CropViewController: UIViewController {
     private lazy var holedDimView: UIView = {
         let dimView = UIView()
         dimView.isUserInteractionEnabled = false
-        dimView.backgroundColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.8)
+        dimView.backgroundColor = CropViewController.dimViewColor
         return dimView
+    }()
+    
+    var holeMaskImage: UIImage? {
+        didSet {
+            if let maskImage = holeMaskImage?.blacked(inverse: true) {
+                holeMaskView.mask(image: maskImage)
+                holeMaskView.isHidden = false
+            } else {
+                holeMaskView.isHidden = true
+            }
+        }
+    }
+    
+    private lazy var holeMaskView: UIView = {
+        let maskView = UIView()
+        maskView.isHidden = true
+        maskView.isUserInteractionEnabled = false
+        maskView.backgroundColor = CropViewController.dimViewColor
+        return maskView
     }()
     
     var cropRect: CGRect = CGRect.zero {
         didSet {
             gridView.frame = cropRect
+            holeMaskView.frame = cropRect
             holedDimView.mask(rect: cropRect, inverse: true)
         }
     }
@@ -47,6 +69,7 @@ class CropViewController: UIViewController {
         
         view.addSubview(imageView)
         view.addSubview(holedDimView)
+        view.addSubview(holeMaskView)
         view.addSubview(gridView)
         _setupButton()
         
@@ -54,6 +77,8 @@ class CropViewController: UIViewController {
         holedDimView.frame = view.bounds
         
         cropRect = CGRect(origin: CGPoint(x: imageView.bounds.midX - 100, y: imageView.bounds.midY - 100), size: CGSize(width: 200, height: 200))
+        
+        holeMaskImage = #imageLiteral(resourceName: "sampleMask.png")
         
         // imageViewをはじめちょうどfitするように合わせる
         imageView.adjustScaleToFit(cropRect)
@@ -78,10 +103,19 @@ class CropViewController: UIViewController {
             imageView.image = result
             imageView.state.translation = .zero
             imageView.state.rotation = 0.0
+            holeMaskImage = nil
         }
     }
     
+    // TODO: delegate to pass the image
     func crop() -> UIImage? {
-        return imageView.getImage(of: cropRect)
+        guard let result = imageView.getImage(of: cropRect) else {
+            return nil
+        }
+        if let mask = holeMaskImage {
+            return result.masked(with: mask)
+        } else {
+            return result
+        }
     }
 }
