@@ -407,7 +407,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = V723YSJ67H;
-				INFOPLIST_FILE = "$(SRCROOT)/CropViewController/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/CropViewController/Resource/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.ha1f.CropViewController;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -422,7 +422,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = V723YSJ67H;
-				INFOPLIST_FILE = "$(SRCROOT)/CropViewController/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/CropViewController/Resource/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.ha1f.CropViewController;
 				PRODUCT_NAME = "$(TARGET_NAME)";
