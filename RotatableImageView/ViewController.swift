@@ -10,7 +10,7 @@ import UIKit
 
 class CropViewController: UIViewController {
     
-    private static let dimViewColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.8)
+    private static let dimViewColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.9)
     
     private lazy var imageView: RotatableImageView = {
         let imageView = RotatableImageView()
@@ -78,7 +78,7 @@ class CropViewController: UIViewController {
         
         cropRect = CGRect(origin: CGPoint(x: imageView.bounds.midX - 100, y: imageView.bounds.midY - 100), size: CGSize(width: 200, height: 200))
         
-        holeMaskImage = #imageLiteral(resourceName: "sampleMask.png")
+        holeMaskImage = UIImage.circle(size: cropRect.size, color: .black, backgroundColor: .white)
         
         // imageViewをはじめちょうどfitするように合わせる
         imageView.adjustScaleToFit(cropRect)

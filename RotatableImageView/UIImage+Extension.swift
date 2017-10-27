@@ -123,4 +123,35 @@ extension UIImage {
         context.fill(frame)
         return UIGraphicsGetImageFromCurrentImageContext()
     }
+    
+    /// Create UIImage of circle.
+    ///
+    /// - parameter size: Size of output image
+    /// - parameter color: Color of the circle
+    /// - parameter backgroundColor: Background color of the image
+    ///
+    /// - returns: The created image. Nil on error.
+    static func circle(size: CGSize, color: UIColor, backgroundColor: UIColor = .clear) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, true, UIScreen.main.scale)
+        defer {
+            UIGraphicsEndImageContext()
+        }
+        guard let context = UIGraphicsGetCurrentContext() else {
+            return nil
+        }
+        let frame = CGRect(origin: .zero, size: size)
+        context.clear(frame)
+        
+        // background
+        context.setFillColor(backgroundColor.cgColor)
+        context.fill(frame)
+        
+        // circle
+        context.setFillColor(color.cgColor)
+        context.setLineWidth(0)
+        context.addEllipse(in: frame)
+        context.fillPath()
+        
+        return UIGraphicsGetImageFromCurrentImageContext()
+    }
 }

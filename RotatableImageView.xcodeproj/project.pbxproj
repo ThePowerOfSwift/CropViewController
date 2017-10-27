@@ -10,7 +10,6 @@
 		562EC7B91FA1DE6900AF38DC /* RotatableImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7B81FA1DE6900AF38DC /* RotatableImageView.swift */; };
 		562EC7BB1FA2B94800AF38DC /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7BA1FA2B94800AF38DC /* GridView.swift */; };
 		562EC7BD1FA2BD1C00AF38DC /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7BC1FA2BD1C00AF38DC /* UIView+Extension.swift */; };
-		562EC7BF1FA2C1A400AF38DC /* sampleMask.png in Resources */ = {isa = PBXBuildFile; fileRef = 562EC7BE1FA2C0CC00AF38DC /* sampleMask.png */; };
 		562EC7C11FA2C20A00AF38DC /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7C01FA2C20A00AF38DC /* UIImage+Extension.swift */; };
 		56C980A21FA02D85007507AB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980A11FA02D85007507AB /* AppDelegate.swift */; };
 		56C980A41FA02D85007507AB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980A31FA02D85007507AB /* ViewController.swift */; };
@@ -35,7 +34,6 @@
 		562EC7B81FA1DE6900AF38DC /* RotatableImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatableImageView.swift; sourceTree = "<group>"; };
 		562EC7BA1FA2B94800AF38DC /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		562EC7BC1FA2BD1C00AF38DC /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
-		562EC7BE1FA2C0CC00AF38DC /* sampleMask.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sampleMask.png; sourceTree = "<group>"; };
 		562EC7C01FA2C20A00AF38DC /* UIImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		56C9809E1FA02D85007507AB /* RotatableImageView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RotatableImageView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56C980A11FA02D85007507AB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -93,7 +91,6 @@
 				56C980A11FA02D85007507AB /* AppDelegate.swift */,
 				56C980A31FA02D85007507AB /* ViewController.swift */,
 				56C980C11FA02F0C007507AB /* sample.png */,
-				562EC7BE1FA2C0CC00AF38DC /* sampleMask.png */,
 				56C980A51FA02D85007507AB /* Main.storyboard */,
 				56C980A81FA02D85007507AB /* Assets.xcassets */,
 				56C980AA1FA02D85007507AB /* LaunchScreen.storyboard */,
@@ -197,7 +194,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				562EC7BF1FA2C1A400AF38DC /* sampleMask.png in Resources */,
 				56C980C21FA02F1F007507AB /* sample.png in Resources */,
 				56C980AC1FA02D85007507AB /* LaunchScreen.storyboard in Resources */,
 				56C980A91FA02D85007507AB /* Assets.xcassets in Resources */,
