@@ -62,7 +62,7 @@ struct GridViewAppearanceConfiguration {
     var borderWidth: CGFloat = 1
 }
 
-class GridView: UIView {
+final class GridView: UIView {
     
     // MARK: Properties
     
@@ -114,7 +114,7 @@ class GridView: UIView {
         context.setLineWidth(1)
         context.setStrokeColor(appearanceConfig.gridColor.cgColor)
         
-        // 縦線
+        // Vertical lines
         let xValues = config.xValues(width: CGFloat(bounds.width))
         xValues.forEach { xValue in
             context.addLines(between: [
@@ -122,7 +122,7 @@ class GridView: UIView {
                 CGPoint(x: xValue, y: bounds.height)])
         }
         
-        // 横線
+        // Horizontal lines
         let yValues = config.yValues(height: CGFloat(bounds.height))
         yValues.forEach { yValue in
             context.addLines(between: [
@@ -130,7 +130,7 @@ class GridView: UIView {
                 CGPoint(x: bounds.width, y: yValue)])
         }
         
-        // 対角線
+        // diagonal
         if config.showDiagonal {
             context.move(to: CGPoint(x: 0, y: 0))
             context.addLine(to: CGPoint(x:CGFloat(bounds.width), y: CGFloat(bounds.height)))

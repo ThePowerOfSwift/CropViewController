@@ -8,7 +8,8 @@
 
 import UIKit
 
-/// 中心に画像を描画する
+/// The view to show image with transformed by rotation, scale, translation.
+/// Set isUserInteractionEnabled = false to disable transforming.
 class RotatableImageView: UIView {
     
     struct RotatableImageViewState {
@@ -19,23 +20,26 @@ class RotatableImageView: UIView {
         static let identity = RotatableImageViewState()
     }
     
+    /// Image to show
     var image: UIImage? {
         didSet {
             setNeedsDisplay()
         }
     }
     
+    /// Current state of rotate, translate, sale
     var state = RotatableImageViewState() {
         didSet {
             setNeedsDisplay()
         }
     }
     
+    /// Size of the image
     var contentSize: CGSize {
         return image?.size ?? .zero
     }
     
-    // TODO: consider rotation
+    /// Calcurates the frame of image
     private func imageFrame(for state: RotatableImageViewState) -> CGRect {
         return CGRect(x: bounds.midX + state.translation.x, y: bounds.midY + state.translation.y, width: contentSize.width * state.scale, height: contentSize.height * state.scale)
     }
@@ -108,10 +112,9 @@ class RotatableImageView: UIView {
         context.setFillColor((backgroundColor ?? UIColor.clear).cgColor)
         context.fill(rect)
         
-        // 座標系を一時退避
+        // Save original coordinate system
         context.saveGState()
         
-        // 座標系を中心に
         context.translateBy(x: rect.midX, y: rect.midY)
         
         // translate
@@ -128,7 +131,7 @@ class RotatableImageView: UIView {
         // draw
         image.draw(in: imageFrame.offsetBy(dx: -imageFrame.width / 2, dy: -imageFrame.width / 2))
         
-        // 座標系を戻す
+        // Restore coordinate system
         context.restoreGState()
         
         return context

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CropViewController: UIViewController {
+public class CropViewController: UIViewController {
     
     private static let dimViewColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.9)
     
@@ -19,7 +19,7 @@ class CropViewController: UIViewController {
         return imageView
     }()
     
-    private lazy var gridView: GridView = {
+    private(set) lazy var gridView: GridView = {
         let gridView = GridView()
         gridView.backgroundColor = .clear
         gridView.layer.borderColor = UIColor.white.cgColor
@@ -35,7 +35,15 @@ class CropViewController: UIViewController {
         return dimView
     }()
     
-    var holeMaskImage: UIImage? {
+    private lazy var holeMaskView: UIView = {
+        let maskView = UIView()
+        maskView.isHidden = true
+        maskView.isUserInteractionEnabled = false
+        maskView.backgroundColor = CropViewController.dimViewColor
+        return maskView
+    }()
+    
+    public var holeMaskImage: UIImage? {
         didSet {
             if let maskImage = holeMaskImage?.blacked(inverse: true) {
                 holeMaskView.mask(image: maskImage)
@@ -46,15 +54,7 @@ class CropViewController: UIViewController {
         }
     }
     
-    private lazy var holeMaskView: UIView = {
-        let maskView = UIView()
-        maskView.isHidden = true
-        maskView.isUserInteractionEnabled = false
-        maskView.backgroundColor = CropViewController.dimViewColor
-        return maskView
-    }()
-    
-    var cropRect: CGRect = CGRect.zero {
+    public var cropRect: CGRect = CGRect.zero {
         didSet {
             gridView.frame = cropRect
             holeMaskView.frame = cropRect
@@ -62,7 +62,7 @@ class CropViewController: UIViewController {
         }
     }
 
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor.black
@@ -71,44 +71,31 @@ class CropViewController: UIViewController {
         view.addSubview(holedDimView)
         view.addSubview(holeMaskView)
         view.addSubview(gridView)
-        _setupButton()
         
         imageView.frame = view.bounds
         holedDimView.frame = view.bounds
         
+        // Set sample crop rect
         cropRect = CGRect(origin: CGPoint(x: imageView.bounds.midX - 100, y: imageView.bounds.midY - 100), size: CGSize(width: 200, height: 200))
         
+        // Set sample crop mask
         holeMaskImage = UIImage.circle(size: cropRect.size, color: .black, backgroundColor: .white)
         
-        // imageViewをはじめちょうどfitするように合わせる
+        adjustImageScaleToFitCropRect()
+    }
+    
+    /// Adjusts scale of image to fit CropRect
+    public func adjustImageScaleToFitCropRect() {
         imageView.adjustScaleToFit(cropRect)
     }
     
-    private func _setupButton() {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        button.setTitle("CROP!", for: .normal)
-        view.addSubview(button)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            button.heightAnchor.constraint(equalToConstant: 50),
-            button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            button.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-            button.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor)
-            ])
-        button.addTarget(self, action: #selector(self.onCropButtonTapped), for: .touchUpInside)
+    /// Adjusts scale of image to fill CropRect
+    public func adjustImageScaleToFillCropRect() {
+        imageView.adjustScaleToFill(cropRect)
     }
     
-    @objc func onCropButtonTapped() {
-        if let result = crop() {
-            imageView.image = result
-            imageView.state.translation = .zero
-            imageView.state.rotation = 0.0
-            holeMaskImage = nil
-        }
-    }
-    
-    // TODO: delegate to pass the image
-    func crop() -> UIImage? {
+    /// Get the cropped and masked image
+    public func crop() -> UIImage? {
         guard let result = imageView.getImage(of: cropRect) else {
             return nil
         }
