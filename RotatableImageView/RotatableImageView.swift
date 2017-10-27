@@ -10,7 +10,7 @@ import UIKit
 
 /// The view to show image with transformed by rotation, scale, translation.
 /// Set isUserInteractionEnabled = false to disable transforming.
-class RotatableImageView: UIView {
+final class RotatableImageView: UIView {
     
     struct RotatableImageViewState {
         var rotation: CGFloat = 0.0
@@ -39,7 +39,11 @@ class RotatableImageView: UIView {
         return image?.size ?? .zero
     }
     
-    /// Calcurates the frame of image
+    /// Calcurates the frame of image on the condition of specified state.
+    ///
+    /// - parameter state: The conditon to calculate the frame on. (ignores rotation)
+    ///
+    /// - returns: Calculated rect
     private func imageFrame(for state: RotatableImageViewState) -> CGRect {
         return CGRect(x: bounds.midX + state.translation.x, y: bounds.midY + state.translation.y, width: contentSize.width * state.scale, height: contentSize.height * state.scale)
     }
@@ -60,7 +64,17 @@ class RotatableImageView: UIView {
         _setupGestureRecognizers()
     }
     
-    // いい感じのscaleに自動調整する
+    override func sizeToFit() {
+        self.frame = CGRect(origin: self.frame.origin, size: contentSize)
+    }
+    
+    override func draw(_ rect: CGRect) {
+        _draw(rect)
+    }
+    
+    /// Adjust iamge scale to fit rect.
+    ///
+    /// - parameter rect: The rectangle to fit.
     func adjustScaleToFit(_ rect: CGRect) {
         let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
         let wScale = rect.width / defaultSize.width
@@ -68,6 +82,9 @@ class RotatableImageView: UIView {
         state.scale = min(wScale, hScale)
     }
     
+    /// Adjust iamge scale to fit rect.
+    ///
+    /// - parameter rect: The rectangle to fill.
     func adjustScaleToFill(_ rect: CGRect) {
         let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
         let wScale = rect.width / defaultSize.width
@@ -75,11 +92,11 @@ class RotatableImageView: UIView {
         state.scale = max(wScale, hScale)
     }
     
-    override func sizeToFit() {
-        self.frame = CGRect(origin: self.frame.origin, size: contentSize)
-    }
-    
     /// draw scale = 1.0 image and crop with converted rect.
+    ///
+    /// - parameter frame: The frame to crop the image.
+    ///
+    /// - returns: The cropped image
     func getImage(of frame: CGRect) -> UIImage? {
         let drawScale = 1 / state.scale
         let drawRect = CGRect(x: 0, y: 0, width: bounds.size.width * drawScale, height: bounds.size.height * drawScale)
@@ -135,10 +152,6 @@ class RotatableImageView: UIView {
         context.restoreGState()
         
         return context
-    }
-    
-    override func draw(_ rect: CGRect) {
-        _draw(rect)
     }
     
     // gesture

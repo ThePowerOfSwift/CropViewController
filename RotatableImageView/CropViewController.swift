@@ -43,9 +43,9 @@ public class CropViewController: UIViewController {
         return maskView
     }()
     
-    public var holeMaskImage: UIImage? {
+    public var maskImage: UIImage? {
         didSet {
-            if let maskImage = holeMaskImage?.blacked(inverse: true) {
+            if let maskImage = maskImage?.blacked(inverse: true) {
                 holeMaskView.mask(image: maskImage)
                 holeMaskView.isHidden = false
             } else {
@@ -79,7 +79,7 @@ public class CropViewController: UIViewController {
         cropRect = CGRect(origin: CGPoint(x: imageView.bounds.midX - 100, y: imageView.bounds.midY - 100), size: CGSize(width: 200, height: 200))
         
         // Set sample crop mask
-        holeMaskImage = UIImage.circle(size: cropRect.size, color: .black, backgroundColor: .white)
+        maskImage = UIImage.circle(size: cropRect.size, color: .black, backgroundColor: .white)
         
         adjustImageScaleToFitCropRect()
     }
@@ -94,12 +94,14 @@ public class CropViewController: UIViewController {
         imageView.adjustScaleToFill(cropRect)
     }
     
-    /// Get the cropped and masked image
+    /// Get the image which is cropped with cropRect and masked with maskImage if needed.
+    ///
+    /// - returns: The cropped and masked image
     public func crop() -> UIImage? {
         guard let result = imageView.getImage(of: cropRect) else {
             return nil
         }
-        if let mask = holeMaskImage {
+        if let mask = maskImage {
             return result.masked(with: mask)
         } else {
             return result
