@@ -172,12 +172,14 @@ final class RotatableImageView: UIView {
     
     private lazy var rotationGestureRecognizer: UIRotationGestureRecognizer = {
         let gestureRecognizer = UIRotationGestureRecognizer()
+        gestureRecognizer.delegate = self
         gestureRecognizer.addTarget(self, action: #selector(self.onRotated(gestureRecognizer:)))
         return gestureRecognizer
     }()
     
     private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
         let gestureRecognizer = UIPanGestureRecognizer()
+        gestureRecognizer.delegate = self
         gestureRecognizer.addTarget(self, action: #selector(self.onPanned(gestureRecognizer:)))
         return gestureRecognizer
     }()
