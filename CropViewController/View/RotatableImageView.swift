@@ -12,23 +12,23 @@ import UIKit
 /// Set isUserInteractionEnabled = false to disable transforming.
 final class RotatableImageView: UIView {
     
-    struct RotatableImageViewState {
-        var rotation: CGFloat = 0.0
-        var scale: CGFloat = 1.0
-        var translation: CGPoint = CGPoint.zero
-        
-        static let identity = RotatableImageViewState()
+    private(set) lazy var manager: TransformStateManager = {
+       let manager = TransformStateManager()
+        manager.delegate = self
+        return manager
+    }()
+    
+    var state: TransformState {
+        set {
+            manager.state = newValue
+        }
+        get {
+            return manager.state
+        }
     }
     
     /// Image to show
     var image: UIImage? {
-        didSet {
-            setNeedsDisplay()
-        }
-    }
-    
-    /// Current state of rotate, translate, sale
-    var state = RotatableImageViewState() {
         didSet {
             setNeedsDisplay()
         }
@@ -44,7 +44,7 @@ final class RotatableImageView: UIView {
     /// - parameter state: The conditon to calculate the frame on. (ignores rotation)
     ///
     /// - returns: Calculated rect
-    private func imageFrame(for state: RotatableImageViewState) -> CGRect {
+    private func imageFrame(for state: TransformState) -> CGRect {
         return CGRect(x: bounds.midX + state.translation.x, y: bounds.midY + state.translation.y, width: contentSize.width * state.scale, height: contentSize.height * state.scale)
     }
     
@@ -61,7 +61,7 @@ final class RotatableImageView: UIView {
     private func _commonInit() {
         self.backgroundColor = .clear
         self.isUserInteractionEnabled = true
-        _setupGestureRecognizers()
+        manager.setupGestureRecognizers(on: self)
     }
     
     override func sizeToFit() {
@@ -73,14 +73,14 @@ final class RotatableImageView: UIView {
     }
     
     private func _scaleToFit(_ rect: CGRect) -> CGFloat {
-        let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
+        let defaultSize = imageFrame(for: TransformState.identity).size
         let wScale = rect.width / defaultSize.width
         let hScale = rect.height / defaultSize.height
         return min(wScale, hScale)
     }
     
     private func _scaleToFill(_ rect: CGRect) -> CGFloat {
-        let defaultSize = imageFrame(for: RotatableImageViewState.identity).size
+        let defaultSize = imageFrame(for: TransformState.identity).size
         let wScale = rect.width / defaultSize.width
         let hScale = rect.height / defaultSize.height
         return max(wScale, hScale)
@@ -161,105 +161,30 @@ final class RotatableImageView: UIView {
         
         return context
     }
-    
-    // gesture
-    private lazy var pinchGestureRecognizer: UIPinchGestureRecognizer = {
-        let gestureRecognizer = UIPinchGestureRecognizer()
-        gestureRecognizer.delegate = self
-        gestureRecognizer.addTarget(self, action: #selector(self.onPinched(gestureRecognizer:)))
-        return gestureRecognizer
-    }()
-    
-    private lazy var rotationGestureRecognizer: UIRotationGestureRecognizer = {
-        let gestureRecognizer = UIRotationGestureRecognizer()
-        gestureRecognizer.delegate = self
-        gestureRecognizer.addTarget(self, action: #selector(self.onRotated(gestureRecognizer:)))
-        return gestureRecognizer
-    }()
-    
-    private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
-        let gestureRecognizer = UIPanGestureRecognizer()
-        gestureRecognizer.delegate = self
-        gestureRecognizer.addTarget(self, action: #selector(self.onPanned(gestureRecognizer:)))
-        return gestureRecognizer
-    }()
-    
-    private var initialRotation: CGFloat = 0.0
-    private var initialScale: CGFloat = 1.0
-    private var initialTranslation: CGPoint = CGPoint.zero
+}
+
+extension RotatableImageView: TransformStateManagerDelegate {
+    func onStateChanged(_ state: TransformState) {
+        setNeedsDisplay()
+    }
     
     private func restrictedValue<T: Comparable>(for value: T, min minValue: T, max maxValue: T) -> T {
         return max(min(value, maxValue), minValue)
     }
     
-    /// Restrict translation not to go outside the screen
-    private func _normalizedTranslation(for translation: CGPoint) -> CGPoint {
-        let shortestEdge = min(contentSize.width, contentSize.height) * state.scale
-        let maxTranslateX = bounds.width / 2 + shortestEdge / 2 - 5
-        let maxTranslateY = bounds.height / 2 + shortestEdge / 2 - 5
-        return CGPoint(x: restrictedValue(for: translation.x, min: -maxTranslateX, max: maxTranslateX),
-                       y: restrictedValue(for: translation.y, min: -maxTranslateY, max: maxTranslateY))
-    }
-    
-    private func _normalizedScale(for scale: CGFloat) -> CGFloat {
+    func normalizedScale(for scale: CGFloat) -> CGFloat {
         let niceScale = _scaleToFit(bounds.insetBy(dx: 50, dy: 50))
         let minimumScale: CGFloat = niceScale * 0.3
         let maximumScale: CGFloat = niceScale * 8.0
         return restrictedValue(for: scale, min: minimumScale, max: maximumScale)
     }
     
-    private func _setupGestureRecognizers() {
-        addGestureRecognizer(pinchGestureRecognizer)
-        addGestureRecognizer(rotationGestureRecognizer)
-        addGestureRecognizer(panGestureRecognizer)
-    }
-    
-    @objc func onRotated(gestureRecognizer: UIRotationGestureRecognizer) {
-        switch gestureRecognizer.state {
-        case .began:
-            initialRotation = state.rotation
-        case .changed:
-            state.rotation = initialRotation + gestureRecognizer.rotation
-        case .ended:
-            state.rotation = initialRotation + gestureRecognizer.rotation
-        case .failed, .cancelled, .possible:
-            break
-        }
-    }
-    
-    @objc func onPinched(gestureRecognizer: UIPinchGestureRecognizer) {
-        switch gestureRecognizer.state {
-        case .began:
-            initialScale = state.scale
-        case .changed:
-            state.scale = _normalizedScale(for: initialScale * gestureRecognizer.scale)
-        case .ended:
-            state.scale = _normalizedScale(for: initialScale * gestureRecognizer.scale)
-        case .failed, .cancelled, .possible:
-            break
-        }
-    }
-    
-    @objc func onPanned(gestureRecognizer: UIPanGestureRecognizer) {
-        switch gestureRecognizer.state {
-        case .began:
-            initialTranslation = state.translation
-        case .changed:
-            let gestureTranslation = gestureRecognizer.translation(in: gestureRecognizer.view)
-            let translation = CGPoint(x: initialTranslation.x + gestureTranslation.x, y: initialTranslation.y + gestureTranslation.y)
-            state.translation = _normalizedTranslation(for: translation)
-        case .ended:
-            let gestureTranslation = gestureRecognizer.translation(in: gestureRecognizer.view)
-            let translation = CGPoint(x: initialTranslation.x + gestureTranslation.x, y: initialTranslation.y + gestureTranslation.y)
-            state.translation = _normalizedTranslation(for: translation)
-        case .failed, .cancelled, .possible:
-            break
-        }
-    }
-}
-
-extension RotatableImageView: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
+    /// Restrict translation not to go outside the screen
+    func normalizedTranslation(for translation: CGPoint) -> CGPoint {
+        let shortestEdge = min(contentSize.width, contentSize.height) * state.scale
+        let maxTranslateX = bounds.width / 2 + shortestEdge / 2 - 5
+        let maxTranslateY = bounds.height / 2 + shortestEdge / 2 - 5
+        return CGPoint(x: restrictedValue(for: translation.x, min: -maxTranslateX, max: maxTranslateX),
+                       y: restrictedValue(for: translation.y, min: -maxTranslateY, max: maxTranslateY))
     }
 }

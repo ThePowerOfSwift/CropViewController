@@ -18,6 +18,7 @@
 		56C980AC1FA02D85007507AB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56C980AA1FA02D85007507AB /* LaunchScreen.storyboard */; };
 		56C980B71FA02D85007507AB /* RotatableImageViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980B61FA02D85007507AB /* RotatableImageViewTests.swift */; };
 		56C980C21FA02F1F007507AB /* sample.png in Resources */ = {isa = PBXBuildFile; fileRef = 56C980C11FA02F0C007507AB /* sample.png */; };
+		E97DC0CC1FA786B00016D58D /* TransformStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97DC0CB1FA786B00016D58D /* TransformStateManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 		56C980B61FA02D85007507AB /* RotatableImageViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatableImageViewTests.swift; sourceTree = "<group>"; };
 		56C980B81FA02D85007507AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		56C980C11FA02F0C007507AB /* sample.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sample.png; sourceTree = "<group>"; };
+		E97DC0CB1FA786B00016D58D /* TransformStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformStateManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				56C980A11FA02D85007507AB /* AppDelegate.swift */,
+				E97DC0CA1FA7869B0016D58D /* Model */,
 				562EC7CB1FA2F6A100AF38DC /* Extension */,
 				562EC7CD1FA2F71D00AF38DC /* Resource */,
 				562EC7CA1FA2F69000AF38DC /* View */,
@@ -141,6 +144,14 @@
 				56C980B81FA02D85007507AB /* Info.plist */,
 			);
 			path = CropViewControllerTests;
+			sourceTree = "<group>";
+		};
+		E97DC0CA1FA7869B0016D58D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E97DC0CB1FA786B00016D58D /* TransformStateManager.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -248,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56C980A41FA02D85007507AB /* CropViewController.swift in Sources */,
+				E97DC0CC1FA786B00016D58D /* TransformStateManager.swift in Sources */,
 				562EC7B91FA1DE6900AF38DC /* RotatableImageView.swift in Sources */,
 				562EC7BB1FA2B94800AF38DC /* GridView.swift in Sources */,
 				562EC7C11FA2C20A00AF38DC /* UIImage+Extension.swift in Sources */,
