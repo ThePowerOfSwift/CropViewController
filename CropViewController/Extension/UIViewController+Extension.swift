@@ -10,6 +10,15 @@ import UIKit
 
 extension UIViewController {
     func layoutAsBottomView(_ bottomView: UIView, height: CGFloat = 60) {
+        if let bottomSuperView = bottomView.superview {
+            if bottomSuperView != view {
+                bottomView.removeFromSuperview()
+                view.addSubview(bottomView)
+            }
+        } else {
+            view.addSubview(bottomView)
+        }
+        
         bottomView.translatesAutoresizingMaskIntoConstraints = false
         if let window = UIApplication.shared.windows.first, window.safeAreaInsets.bottom > 0.0 {
             // Temporary value
