@@ -8,9 +8,15 @@
 
 import UIKit
 
+public protocol CropViewControllerDelegate: class {
+    func cropViewController(didImageCropped cropViewController: CropViewController, croppedImage: UIImage?)
+}
+
 public class CropViewController: UIViewController {
     
     private static let dimViewColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.9)
+    
+    public weak var delegate: CropViewControllerDelegate?
     
     private lazy var imageView: TransformableImageView = {
         let imageView = TransformableImageView()
@@ -140,7 +146,9 @@ public class CropViewController: UIViewController {
     
     @objc
     private func onCropButtonTapped(_ button: UIButton) {
-        if let cropped = self.crop() {
+        let croppedImage = self.crop()
+        delegate?.cropViewController(didImageCropped: self, croppedImage: croppedImage)
+        if let cropped = croppedImage {
             self.imageView.image = cropped
             self.imageView.state.rotation = 0.0
             self.imageView.state.translation = CGPoint(x: 0, y: 0)
