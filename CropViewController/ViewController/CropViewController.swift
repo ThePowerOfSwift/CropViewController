@@ -18,9 +18,26 @@ public class CropViewController: UIViewController {
     
     public weak var delegate: CropViewControllerDelegate?
     
+    public var image: UIImage? {
+        set {
+            imageView.image = newValue
+        }
+        get {
+            return imageView.image
+        }
+    }
+    
+    public var showCropButton: Bool {
+        set {
+            cropButton.isHidden = showCropButton
+        }
+        get {
+            return cropButton.isHidden
+        }
+    }
+    
     private lazy var imageView: TransformableImageView = {
         let imageView = TransformableImageView()
-        imageView.image = #imageLiteral(resourceName: "sample.png")
         imageView.state.scale = 1.0
         return imageView
     }()
@@ -70,9 +87,7 @@ public class CropViewController: UIViewController {
     
     public var cropRect: CGRect = CGRect.zero {
         didSet {
-            gridView.frame = cropRect
-            holeMaskView.frame = cropRect
-            holedDimView.mask(rect: cropRect, inverse: true)
+            _layoutWithCropRect()
         }
     }
 
@@ -89,40 +104,18 @@ public class CropViewController: UIViewController {
         
         imageView.frame = view.bounds
         holedDimView.frame = view.bounds
-        _layoutCropButton()
-        
-        // Set sample crop rect
-        cropRect = CGRect(origin: CGPoint(x: imageView.bounds.midX - 100, y: imageView.bounds.midY - 100), size: CGSize(width: 200, height: 200))
-        
-        // Set sample crop mask
-        maskImage = UIImage.circle(size: cropRect.size, color: .black, backgroundColor: .white)
+        layoutAsBottomView(cropButton, height: 60)
         
         adjustImageScaleToFillCropRect()
+        
+        // cropRect
+        _layoutWithCropRect()
     }
     
-    private func _layoutCropButton() {
-        cropButton.translatesAutoresizingMaskIntoConstraints = false
-        if let window = UIApplication.shared.windows.first, window.safeAreaInsets.bottom > 0.0 {
-            let cropButtonHeight: CGFloat = 60
-            cropButton.frame = CGRect(x: 8, y: view.bounds.height - cropButtonHeight, width: view.bounds.width - 16, height: cropButtonHeight)
-            NSLayoutConstraint.activate([
-                cropButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-                cropButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 8),
-                cropButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -8),
-                cropButton.heightAnchor.constraint(equalToConstant: cropButtonHeight)
-                ])
-            cropButton.layer.cornerRadius = 10
-            cropButton.layer.shadowColor = UIColor.black.cgColor
-            cropButton.layer.shadowOpacity = 0.5
-            cropButton.layer.shadowOffset = CGSize(width: 2, height: 2)
-        } else {
-            NSLayoutConstraint.activate([
-                cropButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-                cropButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-                cropButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-                cropButton.heightAnchor.constraint(equalToConstant: 60)
-                ])
-        }
+    private func _layoutWithCropRect() {
+        gridView.frame = cropRect
+        holeMaskView.frame = cropRect
+        holedDimView.mask(rect: cropRect, inverse: true)
     }
     
     /// Adjusts scale of image to fill CropRect
@@ -148,10 +141,6 @@ public class CropViewController: UIViewController {
     private func onCropButtonTapped(_ button: UIButton) {
         let croppedImage = self.crop()
         delegate?.cropViewController(didImageCropped: self, croppedImage: croppedImage)
-        if let cropped = croppedImage {
-            self.imageView.image = cropped
-            self.imageView.state.rotation = 0.0
-            self.imageView.state.translation = CGPoint(x: 0, y: 0)
-        }
+        self.dismiss(animated: true, completion: nil)
     }
 }
