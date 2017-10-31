@@ -15,7 +15,7 @@ public class CropViewController: UIViewController {
     private lazy var imageView: TransformableImageView = {
         let imageView = TransformableImageView()
         imageView.image = #imageLiteral(resourceName: "sample.png")
-        imageView.manager.state.scale = 0.1
+        imageView.state.scale = 1.0
         return imageView
     }()
     
@@ -41,6 +41,14 @@ public class CropViewController: UIViewController {
         maskView.isUserInteractionEnabled = false
         maskView.backgroundColor = CropViewController.dimViewColor
         return maskView
+    }()
+    
+    private lazy var cropButton: UIButton = {
+       let button = UIButton()
+        button.backgroundColor = UIColor.darkGray
+        button.addTarget(self, action: #selector(self.onCropButtonTapped(_:)), for: .touchUpInside)
+        button.setTitle("CROP!", for: .normal)
+        return button
     }()
     
     public var maskImage: UIImage? {
@@ -71,9 +79,11 @@ public class CropViewController: UIViewController {
         view.addSubview(holedDimView)
         view.addSubview(holeMaskView)
         view.addSubview(gridView)
+        view.addSubview(cropButton)
         
         imageView.frame = view.bounds
         holedDimView.frame = view.bounds
+        _layoutCropButton()
         
         // Set sample crop rect
         cropRect = CGRect(origin: CGPoint(x: imageView.bounds.midX - 100, y: imageView.bounds.midY - 100), size: CGSize(width: 200, height: 200))
@@ -81,12 +91,32 @@ public class CropViewController: UIViewController {
         // Set sample crop mask
         maskImage = UIImage.circle(size: cropRect.size, color: .black, backgroundColor: .white)
         
-        adjustImageScaleToFitCropRect()
+        adjustImageScaleToFillCropRect()
     }
     
-    /// Adjusts scale of image to fit CropRect
-    public func adjustImageScaleToFitCropRect() {
-        imageView.adjustScaleToFit(cropRect)
+    private func _layoutCropButton() {
+        cropButton.translatesAutoresizingMaskIntoConstraints = false
+        if let window = UIApplication.shared.windows.first, window.safeAreaInsets.bottom > 0.0 {
+            let cropButtonHeight: CGFloat = 60
+            cropButton.frame = CGRect(x: 8, y: view.bounds.height - cropButtonHeight, width: view.bounds.width - 16, height: cropButtonHeight)
+            NSLayoutConstraint.activate([
+                cropButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+                cropButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 8),
+                cropButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -8),
+                cropButton.heightAnchor.constraint(equalToConstant: cropButtonHeight)
+                ])
+            cropButton.layer.cornerRadius = 10
+            cropButton.layer.shadowColor = UIColor.black.cgColor
+            cropButton.layer.shadowOpacity = 0.5
+            cropButton.layer.shadowOffset = CGSize(width: 2, height: 2)
+        } else {
+            NSLayoutConstraint.activate([
+                cropButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+                cropButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+                cropButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+                cropButton.heightAnchor.constraint(equalToConstant: 60)
+                ])
+        }
     }
     
     /// Adjusts scale of image to fill CropRect
@@ -105,6 +135,15 @@ public class CropViewController: UIViewController {
             return result.masked(with: mask)
         } else {
             return result
+        }
+    }
+    
+    @objc
+    private func onCropButtonTapped(_ button: UIButton) {
+        if let cropped = self.crop() {
+            self.imageView.image = cropped
+            self.imageView.state.rotation = 0.0
+            self.imageView.state.translation = CGPoint(x: 0, y: 0)
         }
     }
 }

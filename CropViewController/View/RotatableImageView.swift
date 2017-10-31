@@ -12,7 +12,7 @@ import UIKit
 /// Set isUserInteractionEnabled = false to disable transforming.
 public final class TransformableImageView: UIView {
     
-    private(set) lazy var manager: TransformStateManager = {
+    private lazy var manager: TransformStateManager = {
        let manager = TransformStateManager()
         manager.delegate = self
         return manager
