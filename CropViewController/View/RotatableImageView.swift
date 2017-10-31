@@ -1,6 +1,6 @@
 //
-//  RotatableImageView.swift
-//  RotatableImageView
+//  TransformableImageView.swift
+//  TransformableImageView
 //
 //  Created by ST20591 on 2017/10/26.
 //  Copyright © 2017年 ha1f. All rights reserved.
@@ -10,7 +10,7 @@ import UIKit
 
 /// The view to show image with transformed by rotation, scale, translation.
 /// Set isUserInteractionEnabled = false to disable transforming.
-final class RotatableImageView: UIView {
+public final class TransformableImageView: UIView {
     
     private(set) lazy var manager: TransformStateManager = {
        let manager = TransformStateManager()
@@ -18,7 +18,15 @@ final class RotatableImageView: UIView {
         return manager
     }()
     
-    var state: TransformState {
+    /// Image to show
+    public var image: UIImage? {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+    
+    /// Current state of transform
+    public var state: TransformState {
         set {
             manager.state = newValue
         }
@@ -27,15 +35,8 @@ final class RotatableImageView: UIView {
         }
     }
     
-    /// Image to show
-    var image: UIImage? {
-        didSet {
-            setNeedsDisplay()
-        }
-    }
-    
     /// Size of the image
-    var contentSize: CGSize {
+    public var contentSize: CGSize {
         return image?.size ?? .zero
     }
     
@@ -48,7 +49,7 @@ final class RotatableImageView: UIView {
         return CGRect(x: bounds.midX + state.translation.x, y: bounds.midY + state.translation.y, width: contentSize.width * state.scale, height: contentSize.height * state.scale)
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         _commonInit()
     }
@@ -61,14 +62,14 @@ final class RotatableImageView: UIView {
     private func _commonInit() {
         self.backgroundColor = .clear
         self.isUserInteractionEnabled = true
-        manager.setupGestureRecognizers(on: self)
+        manager.addGestureRecognizers(to: self)
     }
     
-    override func sizeToFit() {
+    override public func sizeToFit() {
         self.frame = CGRect(origin: self.frame.origin, size: contentSize)
     }
     
-    override func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         _draw(rect)
     }
     
@@ -89,15 +90,15 @@ final class RotatableImageView: UIView {
     /// Adjust iamge scale to fit rect.
     ///
     /// - parameter rect: The rectangle to fit.
-    func adjustScaleToFit(_ rect: CGRect) {
-        state.scale = _scaleToFit(rect)
+    public func adjustScaleToFit(_ rect: CGRect) {
+        manager.state.scale = _scaleToFit(rect)
     }
     
     /// Adjust iamge scale to fit rect.
     ///
     /// - parameter rect: The rectangle to fill.
-    func adjustScaleToFill(_ rect: CGRect) {
-        state.scale = _scaleToFill(rect)
+    public func adjustScaleToFill(_ rect: CGRect) {
+        manager.state.scale = _scaleToFill(rect)
     }
     
     /// draw scale = 1.0 image and crop with converted rect.
@@ -105,8 +106,12 @@ final class RotatableImageView: UIView {
     /// - parameter frame: The frame to crop the image.
     ///
     /// - returns: The cropped image
-    func getImage(of frame: CGRect) -> UIImage? {
-        let drawScale = 1 / state.scale
+    public func getImage(of frame: CGRect) -> UIImage? {
+        guard manager.state.scale != 0 else {
+            return nil
+        }
+        
+        let drawScale = 1 / manager.state.scale
         let drawRect = CGRect(x: 0, y: 0, width: bounds.size.width * drawScale, height: bounds.size.height * drawScale)
         
         UIGraphicsBeginImageContext(drawRect.size)
@@ -143,15 +148,15 @@ final class RotatableImageView: UIView {
         context.translateBy(x: rect.midX, y: rect.midY)
         
         // translate
-        context.translateBy(x: state.translation.x * drawScale, y: state.translation.y * drawScale)
+        context.translateBy(x: manager.state.translation.x * drawScale, y: manager.state.translation.y * drawScale)
         
         let imageFrame = CGRect(origin: .zero, size: image.size)
         
         // rotate
-        context.rotate(by: state.rotation)
+        context.rotate(by: manager.state.rotation)
         
         // scale
-        context.scaleBy(x: state.scale * drawScale, y: state.scale * drawScale)
+        context.scaleBy(x: manager.state.scale * drawScale, y: manager.state.scale * drawScale)
         
         // draw
         image.draw(in: imageFrame.offsetBy(dx: -imageFrame.width / 2, dy: -imageFrame.width / 2))
@@ -163,7 +168,7 @@ final class RotatableImageView: UIView {
     }
 }
 
-extension RotatableImageView: TransformStateManagerDelegate {
+extension TransformableImageView: TransformStateManagerDelegate {
     func onStateChanged(_ state: TransformState) {
         setNeedsDisplay()
     }
@@ -181,7 +186,7 @@ extension RotatableImageView: TransformStateManagerDelegate {
     
     /// Restrict translation not to go outside the screen
     func normalizedTranslation(for translation: CGPoint) -> CGPoint {
-        let shortestEdge = min(contentSize.width, contentSize.height) * state.scale
+        let shortestEdge = min(contentSize.width, contentSize.height) * manager.state.scale
         let maxTranslateX = bounds.width / 2 + shortestEdge / 2 - 5
         let maxTranslateY = bounds.height / 2 + shortestEdge / 2 - 5
         return CGPoint(x: restrictedValue(for: translation.x, min: -maxTranslateX, max: maxTranslateX),

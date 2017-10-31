@@ -11,33 +11,53 @@ import UIKit
 protocol TransformStateManagerDelegate: class {
     func normalizedScale(for scale: CGFloat) -> CGFloat
     func normalizedTranslation(for translation: CGPoint) -> CGPoint
+    func normalizedRotation(for rotation: CGFloat) -> CGFloat
     func onStateChanged(_ state: TransformState)
 }
 
-struct TransformState {
-    var rotation: CGFloat = 0.0
-    var scale: CGFloat = 1.0
-    var translation: CGPoint = CGPoint.zero
-    
-    static let identity = TransformState()
+extension TransformStateManagerDelegate {
+    func normalizedScale(for scale: CGFloat) -> CGFloat {
+        return scale
+    }
+    func normalizedTranslation(for translation: CGPoint) -> CGPoint {
+        return translation
+    }
+    func normalizedRotation(for rotation: CGFloat) -> CGFloat {
+        return rotation
+    }
+    func onStateChanged(_ state: TransformState) {
+    }
 }
 
-class TransformStateManager: NSObject {
-    private lazy var pinchGestureRecognizer: UIPinchGestureRecognizer = {
+final class TransformStateManager: NSObject {
+    
+    // MARK: - Public Properties
+    
+    public weak var delegate: TransformStateManagerDelegate?
+    
+    public var state = TransformState() {
+        didSet {
+            delegate?.onStateChanged(state)
+        }
+    }
+    
+    // MARK: - Private Properties
+    
+    private lazy var pinchTransformGestureRecognizer: UIPinchGestureRecognizer = {
         let gestureRecognizer = UIPinchGestureRecognizer()
         gestureRecognizer.delegate = self
         gestureRecognizer.addTarget(self, action: #selector(self.onPinched(gestureRecognizer:)))
         return gestureRecognizer
     }()
     
-    private lazy var rotationGestureRecognizer: UIRotationGestureRecognizer = {
+    private lazy var rotationTransformGestureRecognizer: UIRotationGestureRecognizer = {
         let gestureRecognizer = UIRotationGestureRecognizer()
         gestureRecognizer.delegate = self
         gestureRecognizer.addTarget(self, action: #selector(self.onRotated(gestureRecognizer:)))
         return gestureRecognizer
     }()
     
-    private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
+    private lazy var panTransformGestureRecognizer: UIPanGestureRecognizer = {
         let gestureRecognizer = UIPanGestureRecognizer()
         gestureRecognizer.delegate = self
         gestureRecognizer.addTarget(self, action: #selector(self.onPanned(gestureRecognizer:)))
@@ -48,34 +68,34 @@ class TransformStateManager: NSObject {
     private var initialScale: CGFloat = 1.0
     private var initialTranslation: CGPoint = CGPoint.zero
     
-    weak var delegate: TransformStateManagerDelegate?
+    // MARK: - Public Functions
     
-    var state = TransformState() {
-        didSet {
-            delegate?.onStateChanged(state)
-        }
+    public func addGestureRecognizers(to view: UIView) {
+        view.addGestureRecognizer(pinchTransformGestureRecognizer)
+        view.addGestureRecognizer(rotationTransformGestureRecognizer)
+        view.addGestureRecognizer(panTransformGestureRecognizer)
     }
     
-    func setupGestureRecognizers(on view: UIView) {
-        view.addGestureRecognizer(pinchGestureRecognizer)
-        view.addGestureRecognizer(rotationGestureRecognizer)
-        view.addGestureRecognizer(panGestureRecognizer)
-    }
+    // MARK: - Private Functions
     
-    @objc func onRotated(gestureRecognizer: UIRotationGestureRecognizer) {
+    @objc
+    private func onRotated(gestureRecognizer: UIRotationGestureRecognizer) {
         switch gestureRecognizer.state {
         case .began:
             initialRotation = state.rotation
         case .changed:
-            state.rotation = initialRotation + gestureRecognizer.rotation
+            let rotation = initialRotation + gestureRecognizer.rotation
+            state.rotation = delegate?.normalizedRotation(for: rotation) ?? rotation
         case .ended:
-            state.rotation = initialRotation + gestureRecognizer.rotation
+            let rotation = initialRotation + gestureRecognizer.rotation
+            state.rotation = delegate?.normalizedRotation(for: rotation) ?? rotation
         case .failed, .cancelled, .possible:
             break
         }
     }
     
-    @objc func onPinched(gestureRecognizer: UIPinchGestureRecognizer) {
+    @objc
+    private func onPinched(gestureRecognizer: UIPinchGestureRecognizer) {
         switch gestureRecognizer.state {
         case .began:
             initialScale = state.scale
@@ -90,7 +110,8 @@ class TransformStateManager: NSObject {
         }
     }
     
-    @objc func onPanned(gestureRecognizer: UIPanGestureRecognizer) {
+    @objc
+    private func onPanned(gestureRecognizer: UIPanGestureRecognizer) {
         switch gestureRecognizer.state {
         case .began:
             initialTranslation = state.translation

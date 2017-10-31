@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  RotatableImageView
+//  CropViewController
 //
 //  Created by ST20591 on 2017/10/25.
 //  Copyright © 2017年 ha1f. All rights reserved.
@@ -12,10 +12,10 @@ public class CropViewController: UIViewController {
     
     private static let dimViewColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.9)
     
-    private lazy var imageView: RotatableImageView = {
-        let imageView = RotatableImageView()
+    private lazy var imageView: TransformableImageView = {
+        let imageView = TransformableImageView()
         imageView.image = #imageLiteral(resourceName: "sample.png")
-        imageView.state.scale = 0.1
+        imageView.manager.state.scale = 0.1
         return imageView
     }()
     

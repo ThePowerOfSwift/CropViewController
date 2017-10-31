@@ -11,6 +11,7 @@
 		562EC7BB1FA2B94800AF38DC /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7BA1FA2B94800AF38DC /* GridView.swift */; };
 		562EC7BD1FA2BD1C00AF38DC /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7BC1FA2BD1C00AF38DC /* UIView+Extension.swift */; };
 		562EC7C11FA2C20A00AF38DC /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7C01FA2C20A00AF38DC /* UIImage+Extension.swift */; };
+		562EC7CF1FA8130E00AF38DC /* TransformState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7CE1FA8130E00AF38DC /* TransformState.swift */; };
 		56C980A21FA02D85007507AB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980A11FA02D85007507AB /* AppDelegate.swift */; };
 		56C980A41FA02D85007507AB /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980A31FA02D85007507AB /* CropViewController.swift */; };
 		56C980A71FA02D85007507AB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56C980A51FA02D85007507AB /* Main.storyboard */; };
@@ -36,6 +37,7 @@
 		562EC7BA1FA2B94800AF38DC /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		562EC7BC1FA2BD1C00AF38DC /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		562EC7C01FA2C20A00AF38DC /* UIImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
+		562EC7CE1FA8130E00AF38DC /* TransformState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformState.swift; sourceTree = "<group>"; };
 		56C9809E1FA02D85007507AB /* CropViewController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CropViewController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56C980A11FA02D85007507AB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56C980A31FA02D85007507AB /* CropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 		E97DC0CA1FA7869B0016D58D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				562EC7CE1FA8130E00AF38DC /* TransformState.swift */,
 				E97DC0CB1FA786B00016D58D /* TransformStateManager.swift */,
 			);
 			path = Model;
@@ -262,6 +265,7 @@
 				E97DC0CC1FA786B00016D58D /* TransformStateManager.swift in Sources */,
 				562EC7B91FA1DE6900AF38DC /* RotatableImageView.swift in Sources */,
 				562EC7BB1FA2B94800AF38DC /* GridView.swift in Sources */,
+				562EC7CF1FA8130E00AF38DC /* TransformState.swift in Sources */,
 				562EC7C11FA2C20A00AF38DC /* UIImage+Extension.swift in Sources */,
 				562EC7BD1FA2BD1C00AF38DC /* UIView+Extension.swift in Sources */,
 				56C980A21FA02D85007507AB /* AppDelegate.swift in Sources */,

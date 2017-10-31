@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  RotatableImageView
+//  CropViewController
 //
 //  Created by ST20591 on 2017/10/25.
 //  Copyright © 2017年 ha1f. All rights reserved.
