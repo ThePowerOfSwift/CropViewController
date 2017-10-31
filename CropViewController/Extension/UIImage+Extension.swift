@@ -39,7 +39,7 @@ extension UIImage {
     ///
     /// - returns: The created image. Nil on error.
     func withSettingBackground(color: UIColor) -> UIImage? {
-        UIGraphicsBeginImageContext(size)
+        UIGraphicsBeginImageContextWithOptions(size, true, 0.0)
         defer {
             UIGraphicsEndImageContext()
         }

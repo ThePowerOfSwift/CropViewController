@@ -85,9 +85,18 @@ public class CropViewController: UIViewController {
         }
     }
     
-    public var cropRect: CGRect = CGRect.zero {
+    public var cropPath: UIBezierPath = UIBezierPath() {
         didSet {
             _layoutWithCropRect()
+        }
+    }
+    
+    public var cropRect: CGRect {
+        set {
+            cropPath = UIBezierPath(rect: newValue)
+        }
+        get {
+            return cropPath.bounds
         }
     }
 
@@ -113,9 +122,10 @@ public class CropViewController: UIViewController {
     }
     
     private func _layoutWithCropRect() {
+        let cropRect = self.cropRect
         gridView.frame = cropRect
         holeMaskView.frame = cropRect
-        holedDimView.mask(rect: cropRect, inverse: true)
+        holedDimView.mask(path: cropPath, inverse: true)
     }
     
     /// Adjusts scale of image to fill CropRect
@@ -127,7 +137,7 @@ public class CropViewController: UIViewController {
     ///
     /// - returns: The cropped and masked image
     public func crop() -> UIImage? {
-        guard let result = imageView.getImage(of: cropRect) else {
+        guard let result = imageView.getCroppedImage(with: cropPath) else {
             return nil
         }
         if let mask = maskImage {

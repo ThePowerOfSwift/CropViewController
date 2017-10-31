@@ -12,6 +12,8 @@ import UIKit
 /// Set isUserInteractionEnabled = false to disable transforming.
 public final class TransformableImageView: UIView {
     
+    // MARK: - Properties
+    
     private lazy var manager: TransformStateManager = {
        let manager = TransformStateManager()
         manager.delegate = self
@@ -35,19 +37,12 @@ public final class TransformableImageView: UIView {
         }
     }
     
-    /// Size of the image
+    /// Size of the image (Get-only)
     public var contentSize: CGSize {
         return image?.size ?? .zero
     }
     
-    /// Calcurates the frame of image on the condition of specified state.
-    ///
-    /// - parameter state: The conditon to calculate the frame on. (ignores rotation)
-    ///
-    /// - returns: Calculated rect
-    private func imageFrame(for state: TransformState) -> CGRect {
-        return CGRect(x: bounds.midX + state.translation.x, y: bounds.midY + state.translation.y, width: contentSize.width * state.scale, height: contentSize.height * state.scale)
-    }
+    // MARK: - Initializers
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -65,6 +60,8 @@ public final class TransformableImageView: UIView {
         manager.addGestureRecognizers(to: self)
     }
     
+    // MARK: - UIView methods
+    
     override public func sizeToFit() {
         self.frame = CGRect(origin: self.frame.origin, size: contentSize)
     }
@@ -73,19 +70,7 @@ public final class TransformableImageView: UIView {
         _draw(rect)
     }
     
-    private func _scaleToFit(_ rect: CGRect) -> CGFloat {
-        let defaultSize = imageFrame(for: TransformState.identity).size
-        let wScale = rect.width / defaultSize.width
-        let hScale = rect.height / defaultSize.height
-        return min(wScale, hScale)
-    }
-    
-    private func _scaleToFill(_ rect: CGRect) -> CGFloat {
-        let defaultSize = imageFrame(for: TransformState.identity).size
-        let wScale = rect.width / defaultSize.width
-        let hScale = rect.height / defaultSize.height
-        return max(wScale, hScale)
-    }
+    // MARK: - Public functions
     
     /// Adjust iamge scale to fit rect.
     ///
@@ -101,12 +86,12 @@ public final class TransformableImageView: UIView {
         manager.state.scale = _scaleToFill(rect)
     }
     
-    /// draw scale = 1.0 image and crop with converted rect.
+    /// Draw image with original resolution, and crop with converted path.
     ///
     /// - parameter frame: The frame to crop the image.
     ///
     /// - returns: The cropped image
-    public func getImage(of frame: CGRect) -> UIImage? {
+    public func getCroppedImage(with path: UIBezierPath) -> UIImage? {
         guard manager.state.scale != 0 else {
             return nil
         }
@@ -118,11 +103,69 @@ public final class TransformableImageView: UIView {
         defer {
             UIGraphicsEndImageContext()
         }
+        
+        path.scaled(by: drawScale)?.addClip()
+        
         guard let context = _draw(drawRect, drawScale: drawScale) else {
             return nil
         }
+        
+        let frame = path.bounds
         let convertedFrame = CGRect(x: frame.origin.x * drawScale, y: frame.origin.y * drawScale, width: frame.width * drawScale, height: frame.width * drawScale)
+        
         return context.makeImage()?.cropping(to: convertedFrame).map { UIImage(cgImage: $0) }
+    }
+    
+    /// Draw image with original resolution, and crop with converted rect.
+    ///
+    /// - parameter frame: The frame to crop the image.
+    ///
+    /// - returns: The cropped image
+    public func getCroppedImage(of frame: CGRect) -> UIImage? {
+        guard manager.state.scale != 0 else {
+            return nil
+        }
+        
+        let drawScale = 1 / manager.state.scale
+        let drawRect = CGRect(x: 0, y: 0, width: bounds.size.width * drawScale, height: bounds.size.height * drawScale)
+        
+        UIGraphicsBeginImageContext(drawRect.size)
+        defer {
+            UIGraphicsEndImageContext()
+        }
+        
+        guard let context = _draw(drawRect, drawScale: drawScale) else {
+            return nil
+        }
+        
+        let convertedFrame = CGRect(x: frame.origin.x * drawScale, y: frame.origin.y * drawScale, width: frame.width * drawScale, height: frame.width * drawScale)
+        
+        return context.makeImage()?.cropping(to: convertedFrame).map { UIImage(cgImage: $0) }
+    }
+    
+    // MARK: - Private functions
+    
+    /// Calcurates the frame of image on the condition of specified state.
+    ///
+    /// - parameter state: The conditon to calculate the frame on. (ignores rotation)
+    ///
+    /// - returns: Calculated rect
+    private func imageFrame(for state: TransformState) -> CGRect {
+        return CGRect(x: bounds.midX + state.translation.x, y: bounds.midY + state.translation.y, width: contentSize.width * state.scale, height: contentSize.height * state.scale)
+    }
+    
+    private func _scaleToFit(_ rect: CGRect) -> CGFloat {
+        let defaultSize = imageFrame(for: TransformState.identity).size
+        let wScale = rect.width / defaultSize.width
+        let hScale = rect.height / defaultSize.height
+        return min(wScale, hScale)
+    }
+    
+    private func _scaleToFill(_ rect: CGRect) -> CGFloat {
+        let defaultSize = imageFrame(for: TransformState.identity).size
+        let wScale = rect.width / defaultSize.width
+        let hScale = rect.height / defaultSize.height
+        return max(wScale, hScale)
     }
     
     @discardableResult
@@ -169,6 +212,9 @@ public final class TransformableImageView: UIView {
 }
 
 extension TransformableImageView: TransformStateManagerDelegate {
+    
+    // MARK: - TransformStateManagerDelegate
+    
     func onStateChanged(_ state: TransformState) {
         setNeedsDisplay()
     }

@@ -43,12 +43,16 @@ class SampleViewController: UIViewController {
     @objc
     func cropImage() {
         let cropViewController = CropViewController()
+         cropViewController.image = imageView.image
+        
         let cropRect = CGRect(origin: CGPoint(x: view.bounds.midX - 100, y: view.bounds.midY - 100), size: CGSize(width: 200, height: 200))
-        cropViewController.image = imageView.image
-        cropViewController.cropRect = cropRect
+        // cropViewController.cropRect = cropRect
+        // cropViewController.maskImage = UIImage.circle(size: cropRect.size, color: .black, backgroundColor: .white)
+        cropViewController.cropPath = UIBezierPath(roundedRect: cropRect, cornerRadius: cropRect.width / 2)
+        
         cropViewController.delegate = self
         cropViewController.showCropButton = true
-        cropViewController.maskImage = UIImage.circle(size: cropRect.size, color: .black, backgroundColor: .white)
+        
         self.present(cropViewController, animated: true, completion: nil)
     }
     
