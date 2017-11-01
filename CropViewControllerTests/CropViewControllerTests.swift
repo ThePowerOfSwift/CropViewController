@@ -1,15 +1,15 @@
 //
-//  RotatableImageViewTests.swift
-//  RotatableImageViewTests
+//  CropViewControllerTests.swift
+//  CropViewControllerTests
 //
 //  Created by ST20591 on 2017/10/25.
 //  Copyright © 2017年 ha1f. All rights reserved.
 //
 
 import XCTest
-@testable import RotatableImageView
+@testable import CropViewController
 
-class RotatableImageViewTests: XCTestCase {
+class CropViewControllerTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
