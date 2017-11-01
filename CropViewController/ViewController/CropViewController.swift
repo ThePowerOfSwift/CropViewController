@@ -16,6 +16,8 @@ public class CropViewController: UIViewController {
     
     private static let dimViewColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.9)
     
+    // MARK: - Public properties
+    
     public weak var delegate: CropViewControllerDelegate?
     
     public var image: UIImage? {
@@ -35,6 +37,8 @@ public class CropViewController: UIViewController {
             return cropButton.isHidden
         }
     }
+    
+    // MARK: - Private properties
     
     private lazy var imageView: TransformableImageView = {
         let imageView = TransformableImageView()
@@ -74,7 +78,7 @@ public class CropViewController: UIViewController {
         return button
     }()
     
-    public var maskImage: UIImage? {
+    private var maskImage: UIImage? {
         didSet {
             if let maskImage = maskImage?.blacked(inverse: true) {
                 holeMaskView.mask(image: maskImage)
@@ -85,20 +89,13 @@ public class CropViewController: UIViewController {
         }
     }
     
-    public var cropPath: UIBezierPath = UIBezierPath() {
+    private var _cropPath: UIBezierPath = UIBezierPath() {
         didSet {
-            _layoutWithCropRect()
+            _layoutWithCropPath()
         }
     }
     
-    public var cropRect: CGRect {
-        set {
-            cropPath = UIBezierPath(rect: newValue)
-        }
-        get {
-            return cropPath.bounds
-        }
-    }
+    // MARK: - Lifecyle
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -118,26 +115,42 @@ public class CropViewController: UIViewController {
         adjustImageScaleToFillCropRect()
         
         // cropRect
-        _layoutWithCropRect()
+        _layoutWithCropPath()
     }
     
-    private func _layoutWithCropRect() {
-        let cropRect = self.cropRect
-        gridView.frame = cropRect
-        holeMaskView.frame = cropRect
-        holedDimView.mask(path: cropPath, inverse: true)
+    // MARK: - Public methods
+    
+    /// Set cropPath with UIBezierPath.
+    ///
+    /// - parameter path: Path to crop inside
+    public func setCropPath(_ path: UIBezierPath) {
+        _cropPath = path
+        gridView.isHidden = true
+    }
+    
+    /// Set cropPath with CGRect, and set maskImage if needed.
+    ///
+    /// - parameter rect: Path to crop inside
+    /// - parameter mask: MaskImage to mask cropped image
+    public func setCropPathWithRect(_ rect: CGRect, mask: UIImage? = nil) {
+        _cropPath = UIBezierPath(rect: rect)
+        gridView.isHidden = mask != nil
+        gridView.frame = rect
+        holeMaskView.frame = rect
+        // Must be set after frame of holeMaskView was set.
+        maskImage = mask
     }
     
     /// Adjusts scale of image to fill CropRect
     public func adjustImageScaleToFillCropRect() {
-        imageView.adjustScaleToFill(cropRect)
+        imageView.adjustScaleToFill(_cropPath.bounds)
     }
     
     /// Get the image which is cropped with cropRect and masked with maskImage if needed.
     ///
     /// - returns: The cropped and masked image
     public func crop() -> UIImage? {
-        guard let result = imageView.getCroppedImage(with: cropPath) else {
+        guard let result = imageView.getCroppedImage(with: _cropPath) else {
             return nil
         }
         if let mask = maskImage {
@@ -145,6 +158,12 @@ public class CropViewController: UIViewController {
         } else {
             return result
         }
+    }
+    
+    // MARK: - Private methods
+    
+    private func _layoutWithCropPath() {
+        holedDimView.mask(path: _cropPath, inverse: true)
     }
     
     @objc

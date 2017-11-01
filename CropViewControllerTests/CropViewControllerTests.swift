@@ -9,6 +9,18 @@
 import XCTest
 @testable import CropViewController
 
+private extension UIImage {
+    func rotatedAndCropped(angle: CGFloat) -> UIImage? {
+        guard let ciImage = safeCiImage else {
+            return nil
+        }
+        let rotated = ciImage.applyingFilter("CIStraightenFilter", parameters: [kCIInputAngleKey: -angle])
+        return UIImage(ciImage: rotated)
+    }
+}
+
+
+
 class CropViewControllerTests: XCTestCase {
     
     override func setUp() {
@@ -26,10 +38,25 @@ class CropViewControllerTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
+    func testCgImageWithGetter() {
+        let image = #imageLiteral(resourceName: "sample.png")
+        assert(image.cgImage != nil)
         self.measure {
             // Put the code you want to measure the time of here.
+            for _ in 0..<100 {
+                _ = image.safeCgImage!
+            }
+        }
+    }
+    
+    func testCgImageWithBuild() {
+        let image = #imageLiteral(resourceName: "sample.png").rotatedAndCropped(angle: 30)!
+        assert(image.cgImage == nil)
+        self.measure {
+            // Put the code you want to measure the time of here.
+            for _ in 0..<100 {
+                _ = image.safeCgImage!
+            }
         }
     }
     

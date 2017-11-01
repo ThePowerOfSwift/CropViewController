@@ -16,6 +16,7 @@
 		562EC7D31FA824D400AF38DC /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7D21FA824D400AF38DC /* UIViewController+Extension.swift */; };
 		562EC7D81FA8579000AF38DC /* UIBezierPath+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7D71FA8579000AF38DC /* UIBezierPath+Extension.swift */; };
 		562EC7DA1FA9506300AF38DC /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 56C980B81FA02D85007507AB /* Info.plist */; };
+		562EC7DB1FA9520400AF38DC /* sample.png in Resources */ = {isa = PBXBuildFile; fileRef = 56C980C11FA02F0C007507AB /* sample.png */; };
 		56C980A21FA02D85007507AB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980A11FA02D85007507AB /* AppDelegate.swift */; };
 		56C980A41FA02D85007507AB /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980A31FA02D85007507AB /* CropViewController.swift */; };
 		56C980A71FA02D85007507AB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56C980A51FA02D85007507AB /* Main.storyboard */; };
@@ -261,6 +262,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				562EC7DB1FA9520400AF38DC /* sample.png in Resources */,
 				562EC7DA1FA9506300AF38DC /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

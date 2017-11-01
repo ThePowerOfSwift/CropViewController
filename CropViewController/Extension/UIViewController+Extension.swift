@@ -18,10 +18,11 @@ extension UIViewController {
         } else {
             view.addSubview(bottomView)
         }
+        bottomView.removeConstraints(bottomView.constraints)
         
         bottomView.translatesAutoresizingMaskIntoConstraints = false
         if let window = UIApplication.shared.windows.first, window.safeAreaInsets.bottom > 0.0 {
-            // Temporary value
+            // Temporary value to calc shadow
             bottomView.frame = CGRect(x: 8, y: view.bounds.height - height, width: view.bounds.width - 16, height: height)
             NSLayoutConstraint.activate([
                 bottomView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
