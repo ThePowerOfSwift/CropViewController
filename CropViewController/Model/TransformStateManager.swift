@@ -29,6 +29,8 @@ extension TransformStateManagerDelegate {
     }
 }
 
+private class DefaultTransformStateManagerDelegate: TransformStateManagerDelegate { }
+
 final class TransformStateManager: NSObject {
     
     // MARK: - Public Properties
@@ -43,30 +45,30 @@ final class TransformStateManager: NSObject {
     
     // MARK: - Private Properties
     
-    private lazy var pinchTransformGestureRecognizer: UIPinchGestureRecognizer = {
+    private(set) lazy var pinchTransformGestureRecognizer: UIPinchGestureRecognizer = {
         let gestureRecognizer = UIPinchGestureRecognizer()
         gestureRecognizer.delegate = self
         gestureRecognizer.addTarget(self, action: #selector(self.onPinched(gestureRecognizer:)))
         return gestureRecognizer
     }()
     
-    private lazy var rotationTransformGestureRecognizer: UIRotationGestureRecognizer = {
+    private(set) lazy var rotationTransformGestureRecognizer: UIRotationGestureRecognizer = {
         let gestureRecognizer = UIRotationGestureRecognizer()
         gestureRecognizer.delegate = self
         gestureRecognizer.addTarget(self, action: #selector(self.onRotated(gestureRecognizer:)))
         return gestureRecognizer
     }()
     
-    private lazy var panTransformGestureRecognizer: UIPanGestureRecognizer = {
+    private(set) lazy var panTransformGestureRecognizer: UIPanGestureRecognizer = {
         let gestureRecognizer = UIPanGestureRecognizer()
         gestureRecognizer.delegate = self
         gestureRecognizer.addTarget(self, action: #selector(self.onPanned(gestureRecognizer:)))
         return gestureRecognizer
     }()
     
-    private var initialRotation: CGFloat = 0.0
-    private var initialScale: CGFloat = 1.0
-    private var initialTranslation: CGPoint = CGPoint.zero
+    private var strongDelegate: TransformStateManagerDelegate {
+        return delegate ?? DefaultTransformStateManagerDelegate()
+    }
     
     // MARK: - Public Functions
     
@@ -81,14 +83,15 @@ final class TransformStateManager: NSObject {
     @objc
     private func onRotated(gestureRecognizer: UIRotationGestureRecognizer) {
         switch gestureRecognizer.state {
-        case .began:
-            initialRotation = state.rotation
-        case .changed:
-            let rotation = initialRotation + gestureRecognizer.rotation
-            state.rotation = delegate?.normalizedRotation(for: rotation) ?? rotation
-        case .ended:
-            let rotation = initialRotation + gestureRecognizer.rotation
-            state.rotation = delegate?.normalizedRotation(for: rotation) ?? rotation
+        case .began, .changed, .ended:
+            let rotation = state.rotation + gestureRecognizer.rotation
+            state.rotation = strongDelegate.normalizedRotation(for: rotation)
+            
+            let transform =  CGAffineTransform(rotationAngle: gestureRecognizer.rotation)
+            let newTranslation = state.translation.applying(transform)
+            state.translation = strongDelegate.normalizedTranslation(for: newTranslation)
+            
+            gestureRecognizer.rotation = 0.0
         case .failed, .cancelled, .possible:
             break
         }
@@ -97,14 +100,15 @@ final class TransformStateManager: NSObject {
     @objc
     private func onPinched(gestureRecognizer: UIPinchGestureRecognizer) {
         switch gestureRecognizer.state {
-        case .began:
-            initialScale = state.scale
-        case .changed:
-            let targetScale = initialScale * gestureRecognizer.scale
-            state.scale = delegate?.normalizedScale(for: targetScale) ?? targetScale
-        case .ended:
-            let targetScale = initialScale * gestureRecognizer.scale
-            state.scale = delegate?.normalizedScale(for: targetScale) ?? targetScale
+        case .began, .changed, .ended:
+            let targetScale = state.scale * gestureRecognizer.scale
+            state.scale = strongDelegate.normalizedScale(for: targetScale)
+            
+            let transform =  CGAffineTransform(scaleX: gestureRecognizer.scale, y: gestureRecognizer.scale)
+            let newTranslation = state.translation.applying(transform)
+            state.translation = strongDelegate.normalizedTranslation(for: newTranslation)
+            
+            gestureRecognizer.scale = 1.0
         case .failed, .cancelled, .possible:
             break
         }
@@ -113,16 +117,11 @@ final class TransformStateManager: NSObject {
     @objc
     private func onPanned(gestureRecognizer: UIPanGestureRecognizer) {
         switch gestureRecognizer.state {
-        case .began:
-            initialTranslation = state.translation
-        case .changed:
+        case .began, .changed, .ended:
             let gestureTranslation = gestureRecognizer.translation(in: gestureRecognizer.view)
-            let translation = CGPoint(x: initialTranslation.x + gestureTranslation.x, y: initialTranslation.y + gestureTranslation.y)
-            state.translation = delegate?.normalizedTranslation(for: translation) ?? translation
-        case .ended:
-            let gestureTranslation = gestureRecognizer.translation(in: gestureRecognizer.view)
-            let translation = CGPoint(x: initialTranslation.x + gestureTranslation.x, y: initialTranslation.y + gestureTranslation.y)
-            state.translation = delegate?.normalizedTranslation(for: translation) ?? translation
+            let translation = CGPoint(x: state.translation.x + gestureTranslation.x, y: state.translation.y + gestureTranslation.y)
+            state.translation = strongDelegate.normalizedTranslation(for: translation)
+            gestureRecognizer.setTranslation(.zero, in: gestureRecognizer.view)
         case .failed, .cancelled, .possible:
             break
         }

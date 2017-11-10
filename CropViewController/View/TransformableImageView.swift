@@ -150,22 +150,16 @@ public final class TransformableImageView: UIView {
     /// - parameter state: The conditon to calculate the frame on. (ignores rotation)
     ///
     /// - returns: Calculated rect
-    private func imageFrame(for state: TransformState) -> CGRect {
+    private func imageFrame(for state: TransformState = TransformState.identity) -> CGRect {
         return CGRect(x: bounds.midX + state.translation.x, y: bounds.midY + state.translation.y, width: contentSize.width * state.scale, height: contentSize.height * state.scale)
     }
     
     private func _scaleToFit(_ rect: CGRect) -> CGFloat {
-        let defaultSize = imageFrame(for: TransformState.identity).size
-        let wScale = rect.width / defaultSize.width
-        let hScale = rect.height / defaultSize.height
-        return min(wScale, hScale)
+        return imageFrame().size.aspectFitScale(to: rect.size)
     }
     
     private func _scaleToFill(_ rect: CGRect) -> CGFloat {
-        let defaultSize = imageFrame(for: TransformState.identity).size
-        let wScale = rect.width / defaultSize.width
-        let hScale = rect.height / defaultSize.height
-        return max(wScale, hScale)
+        return imageFrame().size.aspectFillScale(to: rect.size)
     }
     
     @discardableResult

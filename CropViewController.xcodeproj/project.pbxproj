@@ -17,6 +17,7 @@
 		562EC7D81FA8579000AF38DC /* UIBezierPath+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7D71FA8579000AF38DC /* UIBezierPath+Extension.swift */; };
 		562EC7DA1FA9506300AF38DC /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 56C980B81FA02D85007507AB /* Info.plist */; };
 		562EC7DB1FA9520400AF38DC /* sample.png in Resources */ = {isa = PBXBuildFile; fileRef = 56C980C11FA02F0C007507AB /* sample.png */; };
+		56A8E2721FB5A57E00547BB1 /* CGSize+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A8E2711FB5A57E00547BB1 /* CGSize+Extension.swift */; };
 		56C980A21FA02D85007507AB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980A11FA02D85007507AB /* AppDelegate.swift */; };
 		56C980A41FA02D85007507AB /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C980A31FA02D85007507AB /* CropViewController.swift */; };
 		56C980A71FA02D85007507AB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56C980A51FA02D85007507AB /* Main.storyboard */; };
@@ -46,6 +47,7 @@
 		562EC7D01FA822AE00AF38DC /* SampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleViewController.swift; sourceTree = "<group>"; };
 		562EC7D21FA824D400AF38DC /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		562EC7D71FA8579000AF38DC /* UIBezierPath+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+Extension.swift"; sourceTree = "<group>"; };
+		56A8E2711FB5A57E00547BB1 /* CGSize+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Extension.swift"; sourceTree = "<group>"; };
 		56C9809E1FA02D85007507AB /* CropViewController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CropViewController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56C980A11FA02D85007507AB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56C980A31FA02D85007507AB /* CropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 				562EC7C01FA2C20A00AF38DC /* UIImage+Extension.swift */,
 				562EC7D21FA824D400AF38DC /* UIViewController+Extension.swift */,
 				562EC7D71FA8579000AF38DC /* UIBezierPath+Extension.swift */,
+				56A8E2711FB5A57E00547BB1 /* CGSize+Extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -276,6 +279,7 @@
 			files = (
 				56C980A41FA02D85007507AB /* CropViewController.swift in Sources */,
 				E97DC0CC1FA786B00016D58D /* TransformStateManager.swift in Sources */,
+				56A8E2721FB5A57E00547BB1 /* CGSize+Extension.swift in Sources */,
 				562EC7B91FA1DE6900AF38DC /* TransformableImageView.swift in Sources */,
 				562EC7BB1FA2B94800AF38DC /* GridView.swift in Sources */,
 				562EC7CF1FA8130E00AF38DC /* TransformState.swift in Sources */,

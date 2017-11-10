@@ -14,7 +14,7 @@ public protocol CropViewControllerDelegate: class {
 
 public class CropViewController: UIViewController {
     
-    private static let dimViewColor = UIColor(displayP3Red: 0, green: 0, blue: 0, alpha: 0.9)
+    private static let dimViewColor = UIColor(displayP3Red: 1.0, green: 1.0, blue: 1.0, alpha: 0.7)
     
     // MARK: - Public properties
     

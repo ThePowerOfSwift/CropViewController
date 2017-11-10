@@ -110,7 +110,7 @@ extension UIImage {
     ///
     /// - returns: The created image. Nil on error.
     static func empty(size: CGSize, color: UIColor = .clear) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(size, true, UIScreen.main.scale)
+        UIGraphicsBeginImageContextWithOptions(size, true, 0.0)
         defer {
             UIGraphicsEndImageContext()
         }
@@ -132,7 +132,7 @@ extension UIImage {
     ///
     /// - returns: The created image. Nil on error.
     static func circle(size: CGSize, color: UIColor, backgroundColor: UIColor = .clear) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(size, true, UIScreen.main.scale)
+        UIGraphicsBeginImageContextWithOptions(size, true, 0.0)
         defer {
             UIGraphicsEndImageContext()
         }
