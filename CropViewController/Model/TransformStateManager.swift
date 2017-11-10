@@ -100,7 +100,7 @@ final class TransformStateManager: NSObject {
             let modifiedTranslation = state.translation.applying(transform)
             let targetTranslation = strongDelegate.normalizedTranslation(for: modifiedTranslation)
             
-            // translationが実現可能なときのみ実行
+            // Transform only if translation can be performed correctly
             if modifiedTranslation == targetTranslation {
                 state.rotation = targetRotation
                 state.translation = targetTranslation
@@ -121,11 +121,18 @@ final class TransformStateManager: NSObject {
             let targetScale = strongDelegate.normalizedScale(for: modifiedScale)
             let actualGestureScale = oldScale != 0 ? targetScale / oldScale : gestureRecognizer.scale
             
-            let transform =  CGAffineTransform(scaleX: actualGestureScale, y: actualGestureScale)
+            // Relative point from center of gesture.view
+            let touchOrigin = gestureRecognizer.view
+                .map { gestureRecognizer.location(in: $0).relativePoint(from: $0.center) }
+                ?? CGPoint.zero
+            // Scale with "center = touchOrigin"
+            let transform = CGAffineTransform(translationX: -touchOrigin.x, y: -touchOrigin.y)
+                .scaledBy(x: actualGestureScale, y: actualGestureScale)
+                .translatedBy(x: touchOrigin.x, y: touchOrigin.y)
             let modifiedTranslation = state.translation.applying(transform)
             let targetTranslation = strongDelegate.normalizedTranslation(for: modifiedTranslation)
             
-            // translationが実現可能なときのみ実行
+            // Transform only if translation can be performed correctly
             if modifiedTranslation == targetTranslation {
                 state.scale = targetScale
                 state.translation = targetTranslation

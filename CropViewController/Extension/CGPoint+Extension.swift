@@ -9,6 +9,11 @@
 import UIKit
 
 extension CGPoint {
+    /// Calculate the CGPoint in relative coordinate.
+    ///
+    /// - parameter point: The point used for origin of new coordinate.
+    ///
+    /// - returns: Relative coordinate from origin point.
     func relativePoint(from origin: CGPoint) -> CGPoint {
         return CGPoint(x: x - origin.x, y: y - origin.y)
     }
