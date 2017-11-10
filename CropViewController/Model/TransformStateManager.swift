@@ -85,9 +85,18 @@ final class TransformStateManager: NSObject {
         switch gestureRecognizer.state {
         case .began, .changed, .ended:
             let rotation = state.rotation + gestureRecognizer.rotation
+            let oldRotation = state.rotation
             state.rotation = strongDelegate.normalizedRotation(for: rotation)
+            let actualGestureRotation = state.rotation - oldRotation
             
-            let transform =  CGAffineTransform(rotationAngle: gestureRecognizer.rotation)
+            // relative point from center of gesture.view
+            let touchOrigin = gestureRecognizer.view
+                .map { gestureRecognizer.location(in: $0).relativePoint(from: $0.center) }
+                ?? CGPoint.zero
+            // Rotate center point with "rotating center = touchOrigin"
+            let transform = CGAffineTransform(translationX: -touchOrigin.x, y: -touchOrigin.y)
+                .rotated(by: actualGestureRotation)
+                .translatedBy(x: touchOrigin.x, y: touchOrigin.y)
             let newTranslation = state.translation.applying(transform)
             state.translation = strongDelegate.normalizedTranslation(for: newTranslation)
             
@@ -102,9 +111,11 @@ final class TransformStateManager: NSObject {
         switch gestureRecognizer.state {
         case .began, .changed, .ended:
             let targetScale = state.scale * gestureRecognizer.scale
+            let oldScale = state.scale
             state.scale = strongDelegate.normalizedScale(for: targetScale)
+            let actualGestureScale = oldScale != 0 ? targetScale / oldScale : gestureRecognizer.scale
             
-            let transform =  CGAffineTransform(scaleX: gestureRecognizer.scale, y: gestureRecognizer.scale)
+            let transform =  CGAffineTransform(scaleX: actualGestureScale, y: actualGestureScale)
             let newTranslation = state.translation.applying(transform)
             state.translation = strongDelegate.normalizedTranslation(for: newTranslation)
             
