@@ -84,10 +84,10 @@ final class TransformStateManager: NSObject {
     private func onRotated(gestureRecognizer: UIRotationGestureRecognizer) {
         switch gestureRecognizer.state {
         case .began, .changed, .ended:
-            let rotation = state.rotation + gestureRecognizer.rotation
             let oldRotation = state.rotation
-            state.rotation = strongDelegate.normalizedRotation(for: rotation)
-            let actualGestureRotation = state.rotation - oldRotation
+            let modifiedRotation = state.rotation + gestureRecognizer.rotation
+            let targetRotation = strongDelegate.normalizedRotation(for: modifiedRotation)
+            let actualGestureRotation = targetRotation - oldRotation
             
             // relative point from center of gesture.view
             let touchOrigin = gestureRecognizer.view
@@ -97,8 +97,14 @@ final class TransformStateManager: NSObject {
             let transform = CGAffineTransform(translationX: -touchOrigin.x, y: -touchOrigin.y)
                 .rotated(by: actualGestureRotation)
                 .translatedBy(x: touchOrigin.x, y: touchOrigin.y)
-            let newTranslation = state.translation.applying(transform)
-            state.translation = strongDelegate.normalizedTranslation(for: newTranslation)
+            let modifiedTranslation = state.translation.applying(transform)
+            let targetTranslation = strongDelegate.normalizedTranslation(for: modifiedTranslation)
+            
+            // translationが実現可能なときのみ実行
+            if modifiedTranslation == targetTranslation {
+                state.rotation = targetRotation
+                state.translation = targetTranslation
+            }
             
             gestureRecognizer.rotation = 0.0
         case .failed, .cancelled, .possible:
@@ -110,14 +116,20 @@ final class TransformStateManager: NSObject {
     private func onPinched(gestureRecognizer: UIPinchGestureRecognizer) {
         switch gestureRecognizer.state {
         case .began, .changed, .ended:
-            let targetScale = state.scale * gestureRecognizer.scale
             let oldScale = state.scale
-            state.scale = strongDelegate.normalizedScale(for: targetScale)
+            let modifiedScale = state.scale * gestureRecognizer.scale
+            let targetScale = strongDelegate.normalizedScale(for: modifiedScale)
             let actualGestureScale = oldScale != 0 ? targetScale / oldScale : gestureRecognizer.scale
             
             let transform =  CGAffineTransform(scaleX: actualGestureScale, y: actualGestureScale)
-            let newTranslation = state.translation.applying(transform)
-            state.translation = strongDelegate.normalizedTranslation(for: newTranslation)
+            let modifiedTranslation = state.translation.applying(transform)
+            let targetTranslation = strongDelegate.normalizedTranslation(for: modifiedTranslation)
+            
+            // translationが実現可能なときのみ実行
+            if modifiedTranslation == targetTranslation {
+                state.scale = targetScale
+                state.translation = targetTranslation
+            }
             
             gestureRecognizer.scale = 1.0
         case .failed, .cancelled, .possible:
