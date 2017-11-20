@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		562892F31FC2A4A700066E82 /* Comparable+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562892F21FC2A4A700066E82 /* Comparable+Extension.swift */; };
 		562EC7B91FA1DE6900AF38DC /* TransformableImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7B81FA1DE6900AF38DC /* TransformableImageView.swift */; };
 		562EC7BB1FA2B94800AF38DC /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7BA1FA2B94800AF38DC /* GridView.swift */; };
 		562EC7BD1FA2BD1C00AF38DC /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562EC7BC1FA2BD1C00AF38DC /* UIView+Extension.swift */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		562892F21FC2A4A700066E82 /* Comparable+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Comparable+Extension.swift"; sourceTree = "<group>"; };
 		562EC7B81FA1DE6900AF38DC /* TransformableImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformableImageView.swift; sourceTree = "<group>"; };
 		562EC7BA1FA2B94800AF38DC /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		562EC7BC1FA2BD1C00AF38DC /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 				562EC7D71FA8579000AF38DC /* UIBezierPath+Extension.swift */,
 				56A8E2711FB5A57E00547BB1 /* CGSize+Extension.swift */,
 				56A8E2731FB5B2A200547BB1 /* CGPoint+Extension.swift */,
+				562892F21FC2A4A700066E82 /* Comparable+Extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -287,6 +290,7 @@
 				562EC7BB1FA2B94800AF38DC /* GridView.swift in Sources */,
 				562EC7CF1FA8130E00AF38DC /* TransformState.swift in Sources */,
 				562EC7C11FA2C20A00AF38DC /* UIImage+Extension.swift in Sources */,
+				562892F31FC2A4A700066E82 /* Comparable+Extension.swift in Sources */,
 				562EC7BD1FA2BD1C00AF38DC /* UIView+Extension.swift in Sources */,
 				562EC7D81FA8579000AF38DC /* UIBezierPath+Extension.swift in Sources */,
 				56A8E2741FB5B2A200547BB1 /* CGPoint+Extension.swift in Sources */,

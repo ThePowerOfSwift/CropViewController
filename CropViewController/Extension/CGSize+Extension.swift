@@ -48,12 +48,4 @@ extension CGSize {
         let scales = _scaleFitScales(to: otherSize)
         return min(scales.widthScale, scales.heightScale)
     }
-    
-    func aspectFit(to otherSize: CGSize) -> CGSize {
-        return self.scaled(by: aspectFitScale(to: otherSize))
-    }
-    
-    func aspectFill(to otherSize: CGSize) -> CGSize {
-        return self.scaled(by: aspectFillScale(to: otherSize))
-    }
 }

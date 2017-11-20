@@ -14,7 +14,7 @@ public protocol CropViewControllerDelegate: class {
 
 public class CropViewController: UIViewController {
     
-    private static let dimViewColor = UIColor(displayP3Red: 1.0, green: 1.0, blue: 1.0, alpha: 0.7)
+    private static let dimViewColor = UIColor(displayP3Red: 0.0, green: 0.0, blue: 0.0, alpha: 0.8)
     
     // MARK: - Public properties
     
@@ -55,6 +55,7 @@ public class CropViewController: UIViewController {
         return gridView
     }()
     
+    /// A view to show path-mask
     private lazy var holedDimView: UIView = {
         let dimView = UIView()
         dimView.isUserInteractionEnabled = false
@@ -62,6 +63,7 @@ public class CropViewController: UIViewController {
         return dimView
     }()
     
+    /// A view to show image-mask
     private lazy var holeMaskView: UIView = {
         let maskView = UIView()
         maskView.isHidden = true
@@ -109,10 +111,14 @@ public class CropViewController: UIViewController {
         view.addSubview(cropButton)
         
         imageView.frame = view.bounds
+        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
         holedDimView.frame = view.bounds
+        holedDimView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
         layoutAsBottomView(cropButton, height: 60)
         
-        adjustImageScaleToFillCropRect()
+        imageView.transformToFill(_cropPath.bounds)
         
         // cropRect
         _layoutWithCropPath()
@@ -139,11 +145,6 @@ public class CropViewController: UIViewController {
         holeMaskView.frame = rect
         // Must be set after frame of holeMaskView was set.
         maskImage = mask
-    }
-    
-    /// Adjusts scale of image to fill CropRect
-    public func adjustImageScaleToFillCropRect() {
-        imageView.adjustScaleToFill(_cropPath.bounds)
     }
     
     /// Get the image which is cropped with cropRect and masked with maskImage if needed.

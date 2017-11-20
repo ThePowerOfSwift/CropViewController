@@ -10,6 +10,7 @@ import UIKit
 
 extension UIViewController {
     func layoutAsBottomView(_ bottomView: UIView, height: CGFloat = 60) {
+        // addSubView
         if let bottomSuperView = bottomView.superview {
             if bottomSuperView != view {
                 bottomView.removeFromSuperview()
@@ -18,6 +19,8 @@ extension UIViewController {
         } else {
             view.addSubview(bottomView)
         }
+        
+        // layout
         bottomView.removeConstraints(bottomView.constraints)
         
         bottomView.translatesAutoresizingMaskIntoConstraints = false

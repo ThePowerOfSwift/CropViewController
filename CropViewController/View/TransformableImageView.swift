@@ -72,18 +72,20 @@ public final class TransformableImageView: UIView {
     
     // MARK: - Public functions
     
-    /// Adjust iamge scale to fit rect.
+    /// Adjust image scale and translation to fit rect.
     ///
     /// - parameter rect: The rectangle to fit.
-    public func adjustScaleToFit(_ rect: CGRect) {
-        manager.state.scale = _scaleToFit(rect)
+    public func transformToFit(_ rect: CGRect) {
+        manager.state.translation = CGPoint(x: rect.midX - self.center.x, y: rect.midY - self.center.y)
+        manager.state.scale = _scaleToFit(rect.size)
     }
     
-    /// Adjust iamge scale to fit rect.
+    /// Adjust image scale and translation to fit rect.
     ///
     /// - parameter rect: The rectangle to fill.
-    public func adjustScaleToFill(_ rect: CGRect) {
-        manager.state.scale = _scaleToFill(rect)
+    public func transformToFill(_ rect: CGRect) {
+        manager.state.translation = CGPoint(x: rect.midX - self.center.x, y: rect.midY - self.center.y)
+        manager.state.scale = _scaleToFill(rect.size)
     }
     
     /// Draw image with original resolution, and crop with converted path.
@@ -154,12 +156,12 @@ public final class TransformableImageView: UIView {
         return CGRect(x: bounds.midX + state.translation.x, y: bounds.midY + state.translation.y, width: contentSize.width * state.scale, height: contentSize.height * state.scale)
     }
     
-    private func _scaleToFit(_ rect: CGRect) -> CGFloat {
-        return imageFrame().size.aspectFitScale(to: rect.size)
+    private func _scaleToFit(_ size: CGSize) -> CGFloat {
+        return imageFrame().size.aspectFitScale(to: size)
     }
     
-    private func _scaleToFill(_ rect: CGRect) -> CGFloat {
-        return imageFrame().size.aspectFillScale(to: rect.size)
+    private func _scaleToFill(_ size: CGSize) -> CGFloat {
+        return imageFrame().size.aspectFillScale(to: size)
     }
     
     @discardableResult
@@ -196,7 +198,7 @@ public final class TransformableImageView: UIView {
         context.scaleBy(x: manager.state.scale * drawScale, y: manager.state.scale * drawScale)
         
         // draw
-        image.draw(in: imageFrame.offsetBy(dx: -imageFrame.width / 2, dy: -imageFrame.width / 2))
+        image.draw(in: imageFrame.offsetBy(dx: -imageFrame.width / 2, dy: -imageFrame.height / 2))
         
         // Restore coordinate system
         context.restoreGState()
@@ -213,15 +215,11 @@ extension TransformableImageView: TransformStateManagerDelegate {
         setNeedsDisplay()
     }
     
-    private func restrictedValue<T: Comparable>(for value: T, min minValue: T, max maxValue: T) -> T {
-        return max(min(value, maxValue), minValue)
-    }
-    
     func normalizedScale(for scale: CGFloat) -> CGFloat {
-        let niceScale = _scaleToFit(bounds.insetBy(dx: 50, dy: 50))
+        let niceScale = _scaleToFit(bounds.insetBy(dx: 50, dy: 50).size)
         let minimumScale: CGFloat = niceScale * 0.3
-        let maximumScale: CGFloat = niceScale * 8.0
-        return restrictedValue(for: scale, min: minimumScale, max: maximumScale)
+        let maximumScale: CGFloat = max(1.0, niceScale * 8.0)
+        return scale.clamp(min: minimumScale, max: maximumScale)
     }
     
     /// Restrict translation not to go outside the screen
@@ -229,7 +227,7 @@ extension TransformableImageView: TransformStateManagerDelegate {
         let shortestEdge = min(contentSize.width, contentSize.height) * manager.state.scale
         let maxTranslateX = bounds.width / 2 + shortestEdge / 2 - 5
         let maxTranslateY = bounds.height / 2 + shortestEdge / 2 - 5
-        return CGPoint(x: restrictedValue(for: translation.x, min: -maxTranslateX, max: maxTranslateX),
-                       y: restrictedValue(for: translation.y, min: -maxTranslateY, max: maxTranslateY))
+        return CGPoint(x: translation.x.clamp(min: -maxTranslateX, max: maxTranslateX),
+                       y: translation.y.clamp(min: -maxTranslateY, max: maxTranslateY))
     }
 }
