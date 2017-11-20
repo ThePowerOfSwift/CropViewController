@@ -99,7 +99,7 @@ public final class TransformableImageView: UIView {
         }
         
         let drawScale = 1 / manager.state.scale
-        let drawRect = CGRect(x: 0, y: 0, width: bounds.size.width * drawScale, height: bounds.size.height * drawScale)
+        let drawRect = CGRect(origin: .zero, size: bounds.size.uniformlyScaled(by: drawScale))
         
         UIGraphicsBeginImageContext(drawRect.size)
         defer {
@@ -129,7 +129,7 @@ public final class TransformableImageView: UIView {
         }
         
         let drawScale = 1 / manager.state.scale
-        let drawRect = CGRect(x: 0, y: 0, width: bounds.size.width * drawScale, height: bounds.size.height * drawScale)
+        let drawRect = CGRect(origin: .zero, size: bounds.size.uniformlyScaled(by: drawScale))
         
         UIGraphicsBeginImageContext(drawRect.size)
         defer {
