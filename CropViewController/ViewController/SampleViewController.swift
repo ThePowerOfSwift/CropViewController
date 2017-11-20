@@ -31,7 +31,7 @@ class SampleViewController: UIViewController {
         NSLayoutConstraint.activate([
             imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             imageView.widthAnchor.constraint(equalToConstant: 200),
-            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 1, constant: 0),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor),
             imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
             ])
         imageView.image = #imageLiteral(resourceName: "sample.png")
@@ -48,16 +48,17 @@ class SampleViewController: UIViewController {
         let cropSize = CGSize(width: 300, height: 300)
         let cropRect = CGRect(origin: CGPoint(x: view.bounds.midX - cropSize.width / 2, y: view.bounds.midY - cropSize.height / 2), size: cropSize)
         
-        // path
+        // crop with path
         let cropPath = UIBezierPath(roundedRect: cropRect, cornerRadius: cropRect.width / 4)
         cropViewController.setCropPath(cropPath)
         
-//        // rect + mask
+//        // crop with rect + mask
 //        let maskImage = UIImage.circle(size: cropRect.size, color: .black, backgroundColor: .white)
 //        cropViewController.setCropPathWithRect(cropRect, mask: maskImage)
         
         cropViewController.delegate = self
         cropViewController.showCropButton = true
+        cropViewController.modalTransitionStyle = .crossDissolve
         
         self.present(cropViewController, animated: true, completion: nil)
     }

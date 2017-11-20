@@ -12,6 +12,8 @@ import UIKit
 /// Set isUserInteractionEnabled = false to disable transforming.
 public final class TransformableImageView: UIView {
     
+    private static let _niceFrameInset: CGFloat = 50
+    
     // MARK: - Properties
     
     private lazy var manager: TransformStateManager = {
@@ -40,6 +42,14 @@ public final class TransformableImageView: UIView {
     /// Size of the image (Get-only)
     public var contentSize: CGSize {
         return image?.size ?? .zero
+    }
+    
+    public var defaultImageFrame: CGRect {
+        return _imageFrame()
+    }
+    
+    public var imageFrame: CGRect {
+        return _imageFrame(for: state)
     }
     
     // MARK: - Initializers
@@ -77,7 +87,8 @@ public final class TransformableImageView: UIView {
     /// - parameter rect: The rectangle to fit.
     public func transformToFit(_ rect: CGRect) {
         manager.state.translation = CGPoint(x: rect.midX - self.center.x, y: rect.midY - self.center.y)
-        manager.state.scale = _scaleToFit(rect.size)
+        manager.state.scale = defaultImageFrame.size.aspectFitScale(to: rect.size)
+        manager.state.rotation = 0.0
     }
     
     /// Adjust image scale and translation to fit rect.
@@ -85,7 +96,8 @@ public final class TransformableImageView: UIView {
     /// - parameter rect: The rectangle to fill.
     public func transformToFill(_ rect: CGRect) {
         manager.state.translation = CGPoint(x: rect.midX - self.center.x, y: rect.midY - self.center.y)
-        manager.state.scale = _scaleToFill(rect.size)
+        manager.state.scale = defaultImageFrame.size.aspectFillScale(to: rect.size)
+        manager.state.rotation = 0.0
     }
     
     /// Draw image with original resolution, and crop with converted path.
@@ -149,19 +161,16 @@ public final class TransformableImageView: UIView {
     
     /// Calcurates the frame of image on the condition of specified state.
     ///
-    /// - parameter state: The conditon to calculate the frame on. (ignores rotation)
+    /// - parameter state: The conditon to calculate the frame on.
     ///
     /// - returns: Calculated rect
-    private func imageFrame(for state: TransformState = TransformState.identity) -> CGRect {
-        return CGRect(x: bounds.midX + state.translation.x, y: bounds.midY + state.translation.y, width: contentSize.width * state.scale, height: contentSize.height * state.scale)
-    }
-    
-    private func _scaleToFit(_ size: CGSize) -> CGFloat {
-        return imageFrame().size.aspectFitScale(to: size)
-    }
-    
-    private func _scaleToFill(_ size: CGSize) -> CGFloat {
-        return imageFrame().size.aspectFillScale(to: size)
+    private func _imageFrame(for state: TransformState = TransformState.identity) -> CGRect {
+        let imageSize = contentSize
+            .uniformlyScaled(by: state.scale)
+            .applying(CGAffineTransform(rotationAngle: state.rotation))
+        return CGRect(origin: CGPoint(x: imageSize.width / 2, y: imageSize.height / 2), size: imageSize)
+            .offsetBy(dx: state.translation.x, dy: state.translation.y)
+            .offsetBy(dx: bounds.midX, dy: bounds.midY)
     }
     
     @discardableResult
@@ -216,7 +225,9 @@ extension TransformableImageView: TransformStateManagerDelegate {
     }
     
     func normalizedScale(for scale: CGFloat) -> CGFloat {
-        let niceScale = _scaleToFit(bounds.insetBy(dx: 50, dy: 50).size)
+        let niceSize = bounds.insetBy(dx: TransformableImageView._niceFrameInset,
+                                      dy: TransformableImageView._niceFrameInset).size
+        let niceScale = defaultImageFrame.size.aspectFitScale(to: niceSize)
         let minimumScale: CGFloat = niceScale * 0.3
         let maximumScale: CGFloat = max(1.0, niceScale * 8.0)
         return scale.clamp(min: minimumScale, max: maximumScale)

@@ -38,13 +38,13 @@ public class CropViewController: UIViewController {
         }
     }
     
-    // MARK: - Private properties
-    
-    private lazy var imageView: TransformableImageView = {
+    public private(set) lazy var imageView: TransformableImageView = {
         let imageView = TransformableImageView()
         imageView.state.scale = 1.0
         return imageView
     }()
+    
+    // MARK: - Private properties
     
     private(set) lazy var gridView: GridView = {
         let gridView = GridView()
@@ -118,6 +118,7 @@ public class CropViewController: UIViewController {
         
         layoutAsBottomView(cropButton, height: 60)
         
+        // Set initial transform state
         imageView.transformToFill(_cropPath.bounds)
         
         // cropRect
