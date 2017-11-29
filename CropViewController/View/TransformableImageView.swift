@@ -29,11 +29,6 @@ public final class TransformableImageView: UIView {
         return view
     }()
     
-    fileprivate var defaultImageLayerBounds: CGRect {
-        let imageSize = image?.size ?? .zero
-        return CGRect(origin: .zero, size: imageSize)
-    }
-    
     /// Image to show
     public var image: UIImage? {
         didSet {
@@ -87,7 +82,7 @@ public final class TransformableImageView: UIView {
     // MARK: - UIView methods
     
     override public func sizeToFit() {
-        self.frame = CGRect(origin: self.frame.origin, size: contentSize)
+        self.frame = CGRect(origin: self.frame.origin, size: imageFrame.size)
     }
     
     override public func layoutSubviews() {
