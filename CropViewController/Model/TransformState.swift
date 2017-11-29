@@ -23,6 +23,8 @@ private extension CGPoint {
     }
 }
 
+
+
 public struct TransformState {
     var rotation: CGFloat = 0.0
     var scale: CGFloat = 1.0
@@ -31,14 +33,15 @@ public struct TransformState {
     static func from(transform: CGAffineTransform) -> TransformState {
         let translation = CGPoint(x: transform.tx, y: transform.ty)
         
-        let transformWithoutTranslation = transform.translatedBy(x: -transform.tx, y: -transform.ty)
+        let transformWithoutTranslation = transform.concatenating(CGAffineTransform(translationX: -translation.x, y: -translation.y))
         
         let xTransformed = CGPoint(x: 1, y: 0).applying(transformWithoutTranslation)
         let yTransformed = CGPoint(x: 0, y: 1).applying(transformWithoutTranslation)
         
         // check if transformed unit vector
-        guard CGPoint.innerProduct(xTransformed, yTransformed) == 0 else {
-            fatalError("must not be distorted")
+        let innerProduct = CGPoint.innerProduct(xTransformed, yTransformed)
+        guard innerProduct == 0 else {
+            fatalError("must not be distorted. Inner product was \(innerProduct)")
         }
         let rotation = xTransformed.gradient
         
@@ -52,10 +55,18 @@ public struct TransformState {
     }
     
     func asCGAffineTransform() -> CGAffineTransform {
-        return CGAffineTransform(scaleX: scale, y: scale)
+        return CGAffineTransform(translationX: translation.x, y: translation.y)
             .rotated(by: rotation)
-            .translatedBy(x: translation.x, y: translation.y)
+            .scaledBy(x: scale, y: scale)
     }
     
     static let identity = TransformState()
+}
+
+extension TransformState: Equatable {
+    public static func ==(lhs: TransformState, rhs: TransformState) -> Bool {
+        return lhs.rotation == rhs.rotation
+            && lhs.scale == rhs.scale
+            && lhs.translation == rhs.translation
+    }
 }

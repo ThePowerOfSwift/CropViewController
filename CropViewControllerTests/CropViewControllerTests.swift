@@ -19,8 +19,6 @@ private extension UIImage {
     }
 }
 
-
-
 class CropViewControllerTests: XCTestCase {
     
     override func setUp() {
@@ -33,9 +31,30 @@ class CropViewControllerTests: XCTestCase {
         super.tearDown()
     }
     
+    private func assertConvertCGAffineTransform(_ state: TransformState) {
+        let newState = TransformState.from(transform: state.asCGAffineTransform())
+        // This possibly fails because of the float-value accuracy.
+        // If it fails, use XCTAssertEqual(_, _, accuracy: _) or something else
+        XCTAssertEqual(state, newState)
+    }
+    
+    private static let statesForTest: [TransformState] = [
+        TransformState.identity,
+        TransformState(rotation: CGFloat.pi / 2, scale: 1.0, translation: CGPoint(x: 0, y: 0)),
+        TransformState(rotation: 0, scale: 3.0, translation: CGPoint(x: 0, y: 0)),
+        TransformState(rotation: 0, scale: 1.0, translation: CGPoint(x: 1, y: 2)),
+        TransformState(rotation: CGFloat.pi / 2, scale: 3.0, translation: CGPoint(x: 0, y: 0)),
+        TransformState(rotation: 0, scale: 3.0, translation: CGPoint(x: 1, y: 2)),
+        TransformState(rotation: CGFloat.pi / 2, scale: 1.0, translation: CGPoint(x: 1, y: 2)),
+        TransformState(rotation: CGFloat.pi / 2, scale: 3.0, translation: CGPoint(x: 1, y: 2))
+    ]
+    
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        CropViewControllerTests.statesForTest.forEach { state in
+            assertConvertCGAffineTransform(state)
+        }
     }
     
     func testCgImageWithGetter() {

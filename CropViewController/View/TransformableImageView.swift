@@ -22,10 +22,23 @@ public final class TransformableImageView: UIView {
         return manager
     }()
     
+    /// UIView to show image
+    fileprivate var imageView: UIImageView = {
+        let view = UIImageView()
+        view.contentMode = .center
+        return view
+    }()
+    
+    fileprivate var defaultImageLayerBounds: CGRect {
+        let imageSize = image?.size ?? .zero
+        return CGRect(origin: .zero, size: imageSize)
+    }
+    
     /// Image to show
     public var image: UIImage? {
         didSet {
-            setNeedsDisplay()
+            imageView.image = image
+            imageView.sizeToFit()
         }
     }
     
@@ -68,6 +81,7 @@ public final class TransformableImageView: UIView {
         self.backgroundColor = .clear
         self.isUserInteractionEnabled = true
         manager.addGestureRecognizers(to: self)
+        addSubview(imageView)
     }
     
     // MARK: - UIView methods
@@ -76,8 +90,9 @@ public final class TransformableImageView: UIView {
         self.frame = CGRect(origin: self.frame.origin, size: contentSize)
     }
     
-    override public func draw(_ rect: CGRect) {
-        _draw(rect)
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        imageView.center = self.center
     }
     
     // MARK: - Public functions
@@ -221,7 +236,7 @@ extension TransformableImageView: TransformStateManagerDelegate {
     // MARK: - TransformStateManagerDelegate
     
     func onStateChanged(_ state: TransformState) {
-        setNeedsDisplay()
+        imageView.transform = state.asCGAffineTransform()
     }
     
     func normalizedScale(for scale: CGFloat) -> CGFloat {
