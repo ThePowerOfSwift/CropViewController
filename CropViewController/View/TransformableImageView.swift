@@ -128,16 +128,17 @@ public final class TransformableImageView: UIView {
             UIGraphicsEndImageContext()
         }
         
-        path.scaled(by: drawScale)?.addClip()
+        guard let scaledPath = path.scaled(by: drawScale) else {
+            return nil
+        }
+        
+        scaledPath.addClip()
         
         guard let context = _draw(drawRect, drawScale: drawScale) else {
             return nil
         }
         
-        let frame = path.bounds
-        let convertedFrame = CGRect(x: frame.origin.x * drawScale, y: frame.origin.y * drawScale, width: frame.width * drawScale, height: frame.width * drawScale)
-        
-        return context.makeImage()?.cropping(to: convertedFrame).map { UIImage(cgImage: $0) }
+        return context.makeImage()?.cropping(to: scaledPath.bounds).map { UIImage(cgImage: $0) }
     }
     
     /// Draw image with original resolution, and crop with converted rect.

@@ -86,9 +86,9 @@ final class TransformStateManager: NSObject {
         let actualGestureRotation = targetRotation - state.rotation
         
         // Rotate center point with "rotating center = touchOrigin"
-        let transform = CGAffineTransform(translationX: -center.x, y: -center.y)
+        let transform = CGAffineTransform(translationX: center.x, y: center.y)
             .rotated(by: actualGestureRotation)
-            .translatedBy(x: center.x, y: center.y)
+            .translatedBy(x: -center.x, y: -center.y)
         let modifiedTranslation = state.translation.applying(transform)
         let targetTranslation = strongDelegate.normalizedTranslation(for: modifiedTranslation)
         
@@ -107,9 +107,9 @@ final class TransformStateManager: NSObject {
         let actualGestureScale = state.scale != 0 ? targetScale / state.scale : scale
         
         // Scale with "center = touchOrigin"
-        let transform = CGAffineTransform(translationX: -center.x, y: -center.y)
+        let transform = CGAffineTransform(translationX: center.x, y: center.y)
             .scaledBy(x: actualGestureScale, y: actualGestureScale)
-            .translatedBy(x: center.x, y: center.y)
+            .translatedBy(x: -center.x, y: -center.y)
         let modifiedTranslation = state.translation.applying(transform)
         let targetTranslation = strongDelegate.normalizedTranslation(for: modifiedTranslation)
         
